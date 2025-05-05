@@ -138,7 +138,7 @@ cd build
 
 :: Run CMake
 echo %YELLOW%Running CMake...%RESET%
-cmake -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ..
+cmake -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ..
 if %errorlevel% neq 0 (
     echo %RED%CMake configuration failed%RESET%
     cd ..
@@ -158,10 +158,10 @@ if %errorlevel% neq 0 (
 
 :: Run executable
 echo %YELLOW%Running application...%RESET%
-if exist Debug\opengl12.exe (
-    start Debug\opengl12.exe
+if exist Debug\CPP_Project.exe (
+    start Debug\CPP_Project.exe
 ) else (
-    echo %RED%Executable not found: opengl12.exe%RESET%
+    echo %RED%Executable not found: CPP_Project.exe%RESET%
 )
 
 cd ..
