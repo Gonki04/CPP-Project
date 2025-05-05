@@ -116,12 +116,21 @@ cls
 echo %BLUE%======== BUILD AND RUN PROJECT ========%RESET%
 echo.
 
-set "VCPKG_ROOT=%cd%\vcpkg"
+
 
 :: Verify VCPKG_ROOT is set
 if not defined VCPKG_ROOT (
     echo %RED%VCPKG_ROOT is not set! Run 'Install Dependencies' first.%RESET%
+    
+    if exist vcpkg/ (
+       pause
+       set "VCPKG_ROOT=%cd%\vcpkg"
+       goto main
+) else (
+  goto main
+)
 
+    set "VCPKG_ROOT=%cd%\vcpkg"
     pause
     goto main
 )
