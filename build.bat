@@ -117,7 +117,7 @@ echo %BLUE%======== BUILD AND RUN PROJECT ========%RESET%
 echo.
 
     if exist vcpkg/ (
-       pause
+       
        set "VCPKG_ROOT=%cd%\vcpkg"
 )
 
