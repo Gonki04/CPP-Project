@@ -79,7 +79,6 @@ if not defined VCPKG_ROOT (
 
     
     set "VCPKG_ROOT=%cd%\vcpkg"
-    setx VCPKG_ROOT "%VCPKG_ROOT%" >nul
     echo %GREEN%Vcpkg installed at: %VCPKG_ROOT%%RESET%
 ) else (
     echo %GREEN%Using existing vcpkg at: %VCPKG_ROOT%%RESET%
@@ -118,7 +117,6 @@ echo %BLUE%======== BUILD AND RUN PROJECT ========%RESET%
 echo.
 
 set "VCPKG_ROOT=%cd%\vcpkg"
-setx VCPKG_ROOT "%VCPKG_ROOT%" >nul
 
 :: Verify VCPKG_ROOT is set
 if not defined VCPKG_ROOT (
@@ -134,7 +132,7 @@ cd build
 
 :: Run CMake
 echo %YELLOW%Running CMake...%RESET%
-cmake -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ..
+cmake -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ..
 if %errorlevel% neq 0 (
     echo %RED%CMake configuration failed%RESET%
     cd ..

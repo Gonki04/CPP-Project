@@ -121,7 +121,7 @@ int main(void) {
 		// Model
 		glm::mat4 model = glm::mat4(1.0f);
 		// Vai efetuando uma rotação ao objeto (apenas para podermos ver todas as faces desenhadas).
-		//model = glm::rotate(model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+		model = glm::rotate(model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
 		// MVP
 		glm::mat4 mvp = projection * view * model;
 
