@@ -52,3 +52,6 @@ Makefile
 # Ignore test output
 Testing/
 tests_output/
+
+
+.vs/
