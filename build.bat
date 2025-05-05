@@ -119,7 +119,6 @@ echo.
     if exist vcpkg/ (
        pause
        set "VCPKG_ROOT=%cd%\vcpkg"
-       goto main
 )
 
 :: Verify VCPKG_ROOT is set
