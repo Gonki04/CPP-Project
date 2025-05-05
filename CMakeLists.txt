@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(opengl12)
+project(CPP_Project)
 
 # Check if we are on Windows
 
@@ -19,18 +19,22 @@ add_subdirectory(extern/glew)  # GLEW's CMake build system
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 
+
+file(GLOB SOURCES "src/*.cpp")
+
 # Add the executable target
-add_executable(opengl12 main.cpp)
+add_executable(CPP_Project ${SOURCES})
 
 # Link libraries to the executable
-target_link_libraries(opengl12 PRIVATE glfw)
-target_link_libraries(opengl12 PRIVATE glm::glm)
-target_link_libraries(opengl12 PRIVATE libglew_static)
+target_link_libraries(CPP_Project PRIVATE glfw)
+target_link_libraries(CPP_Project PRIVATE glm::glm)
+target_link_libraries(CPP_Project PRIVATE libglew_static)
 
-target_link_libraries(opengl12 PRIVATE glad)
+target_link_libraries(CPP_Project PRIVATE glad)
 # --- Include GLEW headers ---
-target_include_directories(opengl12 PRIVATE
+target_include_directories(CPP_Project PRIVATE
     extern/glew/include  # GLEW headers
+    src/header
 )
 
 
@@ -38,9 +42,9 @@ target_include_directories(opengl12 PRIVATE
 if(WIN32)
     # Use custom command to copy resources folder on Windows
     add_custom_command(
-        TARGET opengl12 POST_BUILD
+        TARGET CPP_Project POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/resources
-            $<TARGET_FILE_DIR:opengl12>/resources
+            $<TARGET_FILE_DIR:CPP_Project>/resources
     )
 endif()
