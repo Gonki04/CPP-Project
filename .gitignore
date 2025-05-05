@@ -1,0 +1,54 @@
+# Ignore build directories
+[Bb]uild/
+[Oo]ut/
+[Vv]cpkg/
+[Ee]xtern/
+# Ignore CMake-generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+
+# Ignore build system files
+*.ninja
+.ninja_deps
+.ninja_log
+
+# Ignore IDE-specific files
+*.VC.db
+*.VC.opendb
+*.user
+*.suo
+*.vcxproj.*
+*.idea/
+*.vscode/
+*.cache/
+# Ignore log and temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+*.o
+*.obj
+*.pyc
+*.pyo
+*.class
+
+# Ignore other unnecessary files
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.app
+*.out
+
+# Ignore package manager directories
+/vcpkg_installed/
+/external/
+
+# Ignore test output
+Testing/
+tests_output/
