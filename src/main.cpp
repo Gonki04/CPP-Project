@@ -8,6 +8,7 @@
 
 #include <windows.h>
 #include <vector>
+#include <Camera.h>
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 }
@@ -17,8 +18,18 @@ void init(void);
 #define WIDTH 800
 #define HEIGHT 600
 
-GLfloat ZOOM = 3.0f;
-GLfloat ANGLE = 1.0f;
+GLfloat ZOOM = 10.0f;
+GLfloat ANGLE = 0.0f;
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (yoffset == 1) {
+        ZOOM += fabs(ZOOM) * 0.1f; // Zoom in
+    } else if (yoffset == -1) {
+        ZOOM -= fabs(ZOOM) * 0.1f; // Zoom out
+    }
+
+    std::cout << "ZOOM = " << ZOOM << std::endl;
+}
 
 std::vector<glm::vec3> Load3DParallelepiped(void) {
 	// 6 faces * 4 vértices por face  
@@ -93,50 +104,53 @@ void display(std::vector<glm::vec3> points, glm::mat4 mvp) {
 }
 
 int main(void) {
-	std::vector<glm::vec3> points = Load3DParallelepiped();
+    std::vector<glm::vec3> points = Load3DParallelepiped();
 
-	GLFWwindow* window;
+    GLFWwindow* window;
 
-	if (!glfwInit()) return -1;
+    if (!glfwInit()) return -1;
 
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Pool Game", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Pool Game", NULL, NULL);
 
-	if (!window) {
-		glfwTerminate();
-		return -1;
-	}
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
 
-	glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
-	init();
+    init();
 
-	//projeçao
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, ZOOM));
 
-	while (!glfwWindowShouldClose(window)) {
-		// View
-		glm::mat4 view = glm::lookAt(
-			glm::vec3(8.0f, 1.0f, ZOOM),	// Posição da câmara no mundo
-			glm::vec3(0.0f, 0.0f, -1.0f),	// Direção para a qual a câmara esta apontada
-			glm::vec3(0.0f, 1.0f, 0.0f)		// Vector vertical
-		);
-		// Model
-		glm::mat4 model = glm::mat4(1.0f);
-		// Vai efetuando uma rotação ao objeto (apenas para podermos ver todas as faces desenhadas).
-		//model = glm::rotate(model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
-		// MVP
-		glm::mat4 mvp = projection * view * model;
+    // Associa a câmera ao "user pointer" da janela
+    glfwSetWindowUserPointer(window, &camera);
 
-		display(points, mvp);
+    // Define o callback de scroll
+    glfwSetScrollCallback(window, scrollCallback);
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+    // Projeção
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
+    while (!glfwWindowShouldClose(window)) {
+        // Atualiza a matriz de visão e modelo
+        camera.ViewMatrix = glm::lookAt(
+            glm::vec3(0.0f, 0.0f, ZOOM),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+        camera.model = glm::mat4(1.0f);
+        camera.model = glm::rotate(camera.model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+        glm::mat4 mvp = projection * camera.ViewMatrix * camera.model;
 
+        display(points, mvp);
 
-	glfwTerminate();
-	return 0;
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
 }
 
 void init(void) {
