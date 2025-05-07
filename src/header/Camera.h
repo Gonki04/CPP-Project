@@ -18,11 +18,13 @@ public:
     void HandleScroll(double yoffset);
 
     float zoom() const { return zoom_; }
+    float fov() const { return fov_; } // Getter for FOV
     glm::mat4 view_matrix() const { return view_matrix_; }
     glm::mat4 model() const { return model_; }
 
 private:
     float zoom_;
+    float fov_; // Field of view
     glm::mat4 view_matrix_;
     glm::mat4 model_;
 };

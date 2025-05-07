@@ -82,47 +82,52 @@ void Init()
 
 int main()
 {
-	std::vector<glm::vec3> points = Load3DParallelepiped();
+    std::vector<glm::vec3> points = Load3DParallelepiped();
 
-	if (!glfwInit())
-		return -1;
+    if (!glfwInit())
+        return -1;
 
-	GLFWwindow *window =
-		glfwCreateWindow(kWidth, kHeight, "Pool Game", nullptr, nullptr);
+    GLFWwindow *window =
+        glfwCreateWindow(kWidth, kHeight, "Pool Game", nullptr, nullptr);
 
-	if (!window)
-	{
-		glfwTerminate();
-		return -1;
-	}
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
 
-	glfwMakeContextCurrent(window);
-	Init();
+    glfwMakeContextCurrent(window);
 
-	Camera camera(kWidth, kHeight, glm::vec3(0.0f, 0.0f, kInitialZoom));
-	glfwSetWindowUserPointer(window, &camera);
-	glfwSetScrollCallback(window, ScrollCallback);
+	glewExperimental = true;
+    if (glewInit() != GLEW_OK)
+    {
+      std::cerr << "Failed to initialize GLEW" << std::endl;
+      return -1;
+    }
+    Init();
 
-	glm::mat4 projection = glm::perspective(
-		glm::radians(45.0f), static_cast<float>(kWidth) / kHeight, 0.1f, 100.0f);
+    // Set the camera's initial position above the table
+    Camera camera(kWidth, kHeight, glm::vec3(0.0f, 5.0f, kInitialZoom));
+    glfwSetWindowUserPointer(window, &camera);
+    glfwSetScrollCallback(window, ScrollCallback);
 
-	while (!glfwWindowShouldClose(window))
-	{
-		glm::mat4 view_matrix = glm::lookAt(
-			glm::vec3(3.0f, 3.0f, camera.zoom()),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 model_matrix = glm::mat4(1.0f);
-		//model_matrix = glm::rotate(model_matrix, kAngle += kRotationSpeed,
-								   //glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
-		glm::mat4 mvp = projection * view_matrix * model_matrix;
+    while (!glfwWindowShouldClose(window))
+    {
+        // Recalculate the projection matrix using the camera's FOV
+        glm::mat4 projection = glm::perspective(
+            glm::radians(camera.fov()), static_cast<float>(kWidth) / kHeight, 0.1f, 100.0f);
 
-		Display(points, mvp);
+        // Use the camera's updated view matrix
+        glm::mat4 view_matrix = camera.view_matrix();
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+        glm::mat4 mvp = projection * view_matrix * model_matrix;
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+        Display(points, mvp);
 
-	glfwTerminate();
-	return 0;
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
 }
