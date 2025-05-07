@@ -4,8 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-// Forward declaration of display (or move display to a shared file if needed)
-void display(std::vector<glm::vec3> points, glm::mat4 mvp);
+// Display
+void Display(const std::vector<glm::vec3>& points, const glm::mat4& mvp);
 
 void drawMinimap(const std::vector<glm::vec3>& points, int windowWidth, int windowHeight) {
     int minimapWidth = 200;
@@ -21,7 +21,7 @@ void drawMinimap(const std::vector<glm::vec3>& points, int windowWidth, int wind
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 mvp = projection * view * model;
 
-    display(points, mvp);
+    Display(points, mvp);
 
     glViewport(0, 0, windowWidth, windowHeight);
 }

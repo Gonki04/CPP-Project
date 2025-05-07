@@ -14,7 +14,7 @@ class Camera
 public:
     Camera(int width, int height, glm::vec3 position);
 
-    // Method to handle scroll events (called by the static wrapper)
+    // Método para lidar com eventos de scroll
     void HandleScroll(double yoffset);
 
     float zoom() const { return zoom_; }
