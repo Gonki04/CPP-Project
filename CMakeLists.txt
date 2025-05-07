@@ -20,7 +20,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 
 
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES "src/*.cpp" "src/Camera.cpp")
 
 # Add the executable target
 add_executable(CPP_Project ${SOURCES})
@@ -29,7 +29,6 @@ add_executable(CPP_Project ${SOURCES})
 target_link_libraries(CPP_Project PRIVATE glfw)
 target_link_libraries(CPP_Project PRIVATE glm::glm)
 target_link_libraries(CPP_Project PRIVATE libglew_static)
-
 target_link_libraries(CPP_Project PRIVATE glad)
 # --- Include GLEW headers ---
 target_include_directories(CPP_Project PRIVATE

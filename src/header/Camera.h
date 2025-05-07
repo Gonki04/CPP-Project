@@ -1,3 +1,6 @@
+#ifndef SRC_HEADER_CAMERA_H_
+#define SRC_HEADER_CAMERA_H_
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -6,18 +9,25 @@
 #include <iostream>
 #include <vector>
 
-class Camera {
-    public:
-            int WIDTH, HEIGHT;
-            GLfloat ZOOM = 10.0f;
-            GLfloat ANGLE = 0.0f;
+class Camera
+{
+public:
+    Camera(int width, int height, glm::vec3 position);
 
-            glm::mat4 ViewMatrix = glm::lookAt(
-                glm::vec3(0.0f, 0.0f, ZOOM),
-                glm::vec3(0.0f, 0.0f, 0.0f), 
-                glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::mat4 model = glm::mat4(1.0f);
-            
-            Camera(int width, int height, glm::vec3 position);
-            //void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    // Method to handle scroll events (called by the static wrapper)
+    void HandleScroll(double yoffset);
+
+    float zoom() const { return zoom_; }
+    glm::mat4 view_matrix() const { return view_matrix_; }
+    glm::mat4 model() const { return model_; }
+
+private:
+    float zoom_;
+    glm::mat4 view_matrix_;
+    glm::mat4 model_;
 };
+
+// Standalone C-style function (forward declaration)
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+
+#endif // SRC_HEADER_CAMERA_H_
