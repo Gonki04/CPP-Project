@@ -7,6 +7,9 @@
 #include <iostream>
 #include <vector>
 #include <windows.h>
+#include <vector>
+#include <Camera.h>
+#include "Minimap.h"
 #include "Camera.h"
 
 extern "C"
@@ -49,8 +52,6 @@ std::vector<glm::vec3> Load3DParallelepiped()
 
 void Display(const std::vector<glm::vec3> &points, const glm::mat4 &mvp)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	const float *vertex_stream = glm::value_ptr(points.front());
 
 	std::vector<glm::vec3> colors = {
@@ -113,6 +114,9 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
         // Recalculate the projection matrix using the camera's FOV
         glm::mat4 projection = glm::perspective(
             glm::radians(camera.fov()), static_cast<float>(kWidth) / kHeight, 0.1f, 100.0f);
@@ -123,6 +127,7 @@ int main()
         glm::mat4 mvp = projection * view_matrix * model_matrix;
 
         Display(points, mvp);
+		drawMinimap(points, kWidth, kHeight);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
