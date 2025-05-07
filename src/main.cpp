@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <vector>
 #include <Camera.h>
+#include "Minimap.h"
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 }
@@ -75,32 +76,31 @@ std::vector<glm::vec3> Load3DParallelepiped(void) {
 }
 
 void display(std::vector<glm::vec3> points, glm::mat4 mvp) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Remover glClear daqui!
+    float* vertex_stream = static_cast<float*>(glm::value_ptr(points.front()));
 
-	float* vertex_stream = static_cast<float*>(glm::value_ptr(points.front()));
-
-	std::vector<glm::vec3> colors = {
-		glm::vec3(0.0f, 0.3f, 0.0f), // Verde escuro
-		glm::vec3(0.0f, 0.5f, 0.0f), // Verde médio
-		glm::vec3(0.0f, 0.7f, 0.0f), // Verde erva
-		glm::vec3(0.3f, 0.8f, 0.3f), // Verde claro
-		glm::vec3(0.5f, 1.0f, 0.5f), // Verde menta
-		glm::vec3(0.6f, 1.0f, 0.6f)  // Verde suave
-	};
-	
-	glBegin(GL_QUADS);
-	for (int nv = 0; nv < 6 * 4 * 3; nv += 3) {
-		// Uma cor por face
-		glColor3f(colors[nv / (4 * 3)].r, colors[nv / (4 * 3)].g, colors[nv / (4 * 3)].b);
-		glm::vec4 vertex = glm::vec4(vertex_stream[nv], vertex_stream[nv + 1], vertex_stream[nv + 2], 1.0f);
-		// Cálculo das coordenadas de recorte
-		glm::vec4 transformed_vertex = mvp * vertex;
-		// Divisão de Perspetiva
-		glm::vec4 normalized_vertex = transformed_vertex / transformed_vertex.w;
-		// Desenho do vértice
-		glVertex3f(normalized_vertex.x, normalized_vertex.y, normalized_vertex.z);
-	}
-	glEnd();
+    std::vector<glm::vec3> colors = {
+        glm::vec3(0.0f, 0.3f, 0.0f), // Verde escuro
+        glm::vec3(0.0f, 0.5f, 0.0f), // Verde médio
+        glm::vec3(0.0f, 0.7f, 0.0f), // Verde erva
+        glm::vec3(0.3f, 0.8f, 0.3f), // Verde claro
+        glm::vec3(0.5f, 1.0f, 0.5f), // Verde menta
+        glm::vec3(0.6f, 1.0f, 0.6f)  // Verde suave
+    };
+    
+    glBegin(GL_QUADS);
+    for (int nv = 0; nv < 6 * 4 * 3; nv += 3) {
+        // Uma cor por face
+        glColor3f(colors[nv / (4 * 3)].r, colors[nv / (4 * 3)].g, colors[nv / (4 * 3)].b);
+        glm::vec4 vertex = glm::vec4(vertex_stream[nv], vertex_stream[nv + 1], vertex_stream[nv + 2], 1.0f);
+        // Cálculo das coordenadas de recorte
+        glm::vec4 transformed_vertex = mvp * vertex;
+        // Divisão de Perspetiva
+        glm::vec4 normalized_vertex = transformed_vertex / transformed_vertex.w;
+        // Desenho do vértice
+        glVertex3f(normalized_vertex.x, normalized_vertex.y, normalized_vertex.z);
+    }
+    glEnd();
 }
 
 int main(void) {
@@ -133,17 +133,23 @@ int main(void) {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
     while (!glfwWindowShouldClose(window)) {
+        // Limpa a tela apenas uma vez por frame
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // Atualiza a matriz de visão e modelo
-        camera.ViewMatrix = glm::lookAt(
-            glm::vec3(0.0f, 0.0f, ZOOM),
-            glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.0f, 1.0f, 0.0f)
+        glm::mat4 view = glm::lookAt(
+            glm::vec3(8.0f, 1.0f, ZOOM),    // Posição da câmara no mundo
+            glm::vec3(0.0f, 0.0f, -1.0f),    // Direção para a qual a câmara esta apontada
+            glm::vec3(0.0f, 1.0f, 0.0f)        // Vector vertical
         );
         camera.model = glm::mat4(1.0f);
-        camera.model = glm::rotate(camera.model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
+        //camera.model = glm::rotate(camera.model, ANGLE += 0.001f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
         glm::mat4 mvp = projection * camera.ViewMatrix * camera.model;
 
         display(points, mvp);
+
+        // Chamar o minimapa
+        drawMinimap(points, WIDTH, HEIGHT);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
