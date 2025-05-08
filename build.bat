@@ -138,7 +138,7 @@ cd build
 
 :: Run CMake
 echo %YELLOW%Running CMake...%RESET%
-cmake -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ..
+cmake -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" .. -DCMAKE_EXPORT_COMPILE_COMMANDS=On
 if %errorlevel% neq 0 (
     echo %RED%CMake configuration failed%RESET%
     cd ..
