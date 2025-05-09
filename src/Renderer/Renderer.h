@@ -9,6 +9,7 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "Shader/shaderClass.h"
+#include "Mesh/Mesh.h"
 
 class Renderer
 {
@@ -28,6 +29,7 @@ private:
     VBO* vbo = nullptr;
     EBO* ebo = nullptr;
     Shader* shader = nullptr;
+    Mesh* mesh;
 
     void SetupOpenGL();
     void PrintSystemInfo();

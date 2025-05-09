@@ -3,6 +3,7 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "Shader/shaderClass.h"
+#include "Mesh/Mesh.h"
 
 std::vector<Vertex> vertices = {
     // Frente (Front)
@@ -128,20 +129,7 @@ bool Renderer::Init()
     SetupOpenGL();
     PrintSystemInfo();
 
-    vao = new VAO();
-    vao->Bind();
-
-    ebo = new EBO(indices); // EBO deve ser criado/bindado com VAO ativo
-    vbo = new VBO(vertices);
-
-    vao->LinkVBO(*vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, position));
-    vao->LinkVBO(*vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-    vao->LinkVBO(*vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, color));
-    vao->LinkVBO(*vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, texUV));
-
-    vao->Unbind();
-    vbo->Unbind();
-    ebo->Unbind();
+    mesh = new Mesh(vertices, indices);
 
     shader = new Shader("resources/default.vert", "resources/default.frag");
 
@@ -168,9 +156,8 @@ void Renderer::Display()
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+     
         shader->Activate();
-        vao->Bind();
 
         static float angle = 0.0f;
         angle += 0.01f;
@@ -190,7 +177,7 @@ void Renderer::Display()
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        mesh->Draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
