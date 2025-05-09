@@ -35,7 +35,7 @@ void Sphere::generateSphere()
             float v = (float)i / stackCount;  // Latitude normalizada [0, 1]
 
             // Cor do vértice (opcional, aqui usamos a normal como cor)
-            glm::vec3 color = (normal + glm::vec3(1.0f)) * 0.5f; // Normalizada para [0, 1]
+            glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
 
             // Adicionar vértice
             vertices.push_back({glm::vec3(x, y, z), normal, color, glm::vec2(u, v)});

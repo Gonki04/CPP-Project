@@ -153,7 +153,8 @@ bool Renderer::Init()
     shader = new Shader("resources/default.vert", "resources/default.frag");
 
     // create table mesh in minimap
-    tableMesh = new Mesh(vertices, indices);
+    tableMesh_MMap = new Mesh(vertices, indices);
+    sphereMesh_MMap = new Mesh(sphereVertices, sphereIndices);
 
     return true;
 }
@@ -211,7 +212,7 @@ void Renderer::Display()
         sphere_Mesh->Draw();
 
         // Draw the minimap
-        drawMinimap(*tableMesh, shader, width, height);
+        drawMinimap(*tableMesh_MMap,*sphereMesh_MMap, shader, width, height);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -224,7 +225,8 @@ Renderer::~Renderer()
     delete vbo;
     delete ebo;
     delete shader;
-    delete tableMesh;
+    delete tableMesh_MMap;
+    delete sphereMesh_MMap;
     delete sphere_Mesh;
 
     if (window)

@@ -5,7 +5,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Mesh/Mesh.h"
 
-void drawMinimap(Mesh& tableMesh, Shader* shader, int windowWidth, int windowHeight) {
+void drawMinimap(Mesh& tableMesh,Mesh& sphereMesh, Shader* shader, int windowWidth, int windowHeight) {
     // Salvar o viewport atual
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -33,6 +33,7 @@ void drawMinimap(Mesh& tableMesh, Shader* shader, int windowWidth, int windowHei
 
     // Desenhar a mesh da mesa
     tableMesh.Draw();
+    sphereMesh.Draw();
 
     // Restaurar viewport original
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);

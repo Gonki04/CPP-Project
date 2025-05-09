@@ -37,7 +37,8 @@ private:
     Sphere* create_Sphere;
     Mesh* sphere_Mesh;
     //for minimap
-    Mesh* tableMesh = nullptr;
+    Mesh* tableMesh_MMap = nullptr;
+    Mesh* sphereMesh_MMap = nullptr;
 
     void SetupOpenGL();
     void PrintSystemInfo();
