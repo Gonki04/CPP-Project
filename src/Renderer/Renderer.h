@@ -10,6 +10,7 @@
 #include "EBO.h"
 #include "Shader/shaderClass.h"
 #include "Mesh/Mesh.h"
+#include "Sphere.h"
 
 class Renderer
 {
@@ -29,8 +30,13 @@ private:
     VBO* vbo = nullptr;
     EBO* ebo = nullptr;
     Shader* shader = nullptr;
-    Mesh* mesh;
 
+    //for table
+    Mesh* table_mesh;
+    //for sphere
+    Sphere* create_Sphere;
+    Mesh* sphere_Mesh;
+    //for minimap
     Mesh* tableMesh = nullptr;
 
     void SetupOpenGL();

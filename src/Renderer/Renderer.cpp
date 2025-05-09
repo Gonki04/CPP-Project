@@ -5,6 +5,7 @@
 #include "Shader/shaderClass.h"
 #include "Minimap/Minimap.h"
 #include "Mesh/Mesh.h"
+#include "Sphere.h"
 
 std::vector<Vertex> vertices = {
     // Frente (Front)
@@ -134,11 +135,24 @@ bool Renderer::Init()
     SetupOpenGL();
     PrintSystemInfo();
 
-    mesh = new Mesh(vertices, indices);
+    // Create table mesh
+    table_mesh = new Mesh(vertices, indices);
 
+    // generate sphere
+    create_Sphere = new Sphere(0.5f, 18, 9);
+
+    // get vertices and indices for sphere
+    std::vector<Vertex> sphereVertices;
+    std::vector<unsigned int> sphereIndices;
+    create_Sphere->GetVerticesAndIndices(sphereVertices, sphereIndices);
+
+    // create sphere mesh
+    sphere_Mesh = new Mesh(sphereVertices, sphereIndices);
+
+    // create shaders
     shader = new Shader("resources/default.vert", "resources/default.frag");
 
-    // Table mesh for minimap
+    // create table mesh in minimap
     tableMesh = new Mesh(vertices, indices);
 
     return true;
@@ -169,7 +183,7 @@ void Renderer::Display()
         lastFrame = currentFrame;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-     
+
         shader->Activate();
 
         static float angle = 0.0f;
@@ -190,8 +204,13 @@ void Renderer::Display()
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        mesh->Draw();
+        // Draw the table
+        table_mesh->Draw();
 
+        // Draw the sphere
+        sphere_Mesh->Draw();
+
+        // Draw the minimap
         drawMinimap(*tableMesh, shader, width, height);
 
         glfwSwapBuffers(window);
@@ -206,6 +225,8 @@ Renderer::~Renderer()
     delete ebo;
     delete shader;
     delete tableMesh;
+    delete sphere_Mesh;
+
     if (window)
     {
         glfwDestroyWindow(window);
