@@ -78,6 +78,10 @@ Renderer::Renderer(int width, int height, const std::string &title)
 {
     // Set error callback first
     glfwSetErrorCallback(GLFWErrorCallback);
+
+    currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
 }
 
 bool Renderer::Init()
@@ -91,7 +95,7 @@ bool Renderer::Init()
 
     // Configure GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
 
@@ -155,12 +159,17 @@ void Renderer::Display()
 {
     while (!glfwWindowShouldClose(window))
     {
+
+        currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      
         shader->Activate();
 
         static float angle = 0.0f;
-        angle += 0.01f;
+        angle += 1.0f * deltaTime;
         float radius = 6.0f;
         float camY = 2.5f;
         float camX = sin(angle) * radius;

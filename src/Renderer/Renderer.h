@@ -16,7 +16,7 @@ class Renderer
 public:
     Renderer(int width, int height, const std::string &title);
     ~Renderer();
-
+    double deltaTime;
     bool Init();
     void Display();
 
@@ -24,7 +24,7 @@ private:
     GLFWwindow *window = nullptr;
     int width, height;
     std::string title;
-
+    double currentFrame, lastFrame;
     VAO* vao = nullptr;
     VBO* vbo = nullptr;
     EBO* ebo = nullptr;
