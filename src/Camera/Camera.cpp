@@ -1,36 +1,16 @@
-//#include "Camera/Camera.h"
-//#include <algorithm>
-//
-//Camera::Camera(int width, int height, glm::vec3 position)
-//    : zoom_(position.z), fov_(45.0f) // Initialize FOV to 45 degrees
-//{
-//    // Set the initial position of the camera above the table
-//    view_matrix_ = glm::lookAt(position, glm::vec3(0.0f, 0.0f, 0.0f),
-//                               glm::vec3(0.0f, 1.0f, 0.0f));
-//}
-//
-//void Camera::HandleScroll(double yoffset)
-//{
-//    if (yoffset == 1)
-//    {
-//        fov_ -= 2.0f; // Zoom in by decreasing FOV
-//    }
-//    else if (yoffset == -1)
-//    {
-//        fov_ += 2.0f; // Zoom out by increasing FOV
-//    }
-//
-//    // Clamp FOV to a reasonable range (e.g., 1 to 90 degrees)
-//    fov_ = std::clamp(fov_, 1.0f, 90.0f);
-//
-//    std::cout << "FOV: " << fov_ << std::endl;
-//}
-//
-//void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
-//{
-//    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window));
-//    if (camera)
-//    {
-//        camera->HandleScroll(yoffset);
-//    }
-//}
+#include "Camera.h"
+
+Camera::Camera(int width, int height, glm::vec3 position)
+{
+    Camera::width = width;
+    Camera::height = height;
+    Position = position;
+}
+
+void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader &shader, const char *uniform) {
+    glm::mat4 view = glm::lookAt(Position, Position + Orientation, Up);
+    glm::mat4 projection = glm::perspective(glm::radians(fov_), (float)width / (float)height, nearPlane, farPlane);
+    glm::mat4 viewProjection = projection * view;
+
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(viewProjection));
+}

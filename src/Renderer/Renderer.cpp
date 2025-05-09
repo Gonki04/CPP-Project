@@ -6,6 +6,7 @@
 #include "Minimap/Minimap.h"
 #include "Mesh/Mesh.h"
 #include "Sphere.h"
+#include "../Camera/Camera.h"
 
 std::vector<Vertex> vertices = {
     // Frente (Front)
@@ -172,6 +173,8 @@ void Renderer::PrintSystemInfo()
 
 void Renderer::Display()
 {
+    Camera camera(width, height, glm::vec3(0.0f, 2.0f, 8.0f));
+
     while (!glfwWindowShouldClose(window))
     {
 
@@ -183,28 +186,33 @@ void Renderer::Display()
  
         shader->Activate();
 
-        static float angle = 0.0f;
-        angle += 1.0f * deltaTime;
-        float radius = 6.0f;
-        float camY = 2.5f;
-        float camX = sin(angle) * radius;
-        float camZ = cos(angle) * radius;
+        camera.Matrix(camera.fov_, 0.1f, 100.0f, *shader, "u_ViewProjection");
+        
+        
+        // static float angle = 0.0f;
+        // angle += 1.0f * deltaTime;
+        // float radius = 6.0f;
+        // float camY = 2.5f;
+        // float camX = sin(angle) * radius;
+        // float camZ = cos(angle) * radius;
+        // glm::mat4 model = glm::mat4(1.0f);
+        // glm::mat4 view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+        // GLuint modelLoc = glGetUniformLocation(shader->ID, "u_Model");
+        // GLuint viewLoc = glGetUniformLocation(shader->ID, "u_View");
+        // GLuint projLoc = glGetUniformLocation(shader->ID, "u_Projection");
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        GLuint modelLoc = glGetUniformLocation(shader->ID, "u_Model");
-        GLuint viewLoc = glGetUniformLocation(shader->ID, "u_View");
-        GLuint projLoc = glGetUniformLocation(shader->ID, "u_Projection");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        // Draw the table
+        glm::mat4 tableModel = glm::mat4(1.0f);
+        shader->SetMat4("u_Model", tableModel);
         table_Mesh->Draw();
 
-        // Draw the sphere
+        // Envie a matriz de modelo para a esfera
+        glm::mat4 sphereModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+        shader->SetMat4("u_Model", sphereModel);
         sphere_Mesh->Draw();
 
         // Draw the minimap
