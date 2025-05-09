@@ -1,27 +1,39 @@
-//#include "Minimap.h"
-//#include <GL/glew.h>
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <vector>
-//
-//// Display
-//void Display(const std::vector<glm::vec3>& points, const glm::mat4& mvp);
-//
-//void drawMinimap(const std::vector<glm::vec3>& points, int windowWidth, int windowHeight) {
-//    int minimapWidth = 200;
-//    int minimapHeight = 150;
-//    glViewport(10, windowHeight - minimapHeight - 10, minimapWidth, minimapHeight);
-//
-//    glm::mat4 projection = glm::ortho(-3.0f, 3.0f, -2.0f, 2.0f, -10.0f, 10.0f);
-//    glm::mat4 view = glm::lookAt(
-//        glm::vec3(0.0f, 5.0f, 0.0f),
-//        glm::vec3(0.0f, 0.0f, 0.0f),
-//        glm::vec3(0.0f, 0.0f, -1.0f)
-//    );
-//    glm::mat4 model = glm::mat4(1.0f);
-//    glm::mat4 mvp = projection * view * model;
-//
-//    Display(points, mvp);
-//
-//    glViewport(0, 0, windowWidth, windowHeight);
-//}
+#include "Minimap.h"
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "Renderer/Renderer.h"
+#include "Renderer/Mesh/Mesh.h"
+
+void drawMinimap(Mesh& tableMesh, Shader* shader, int windowWidth, int windowHeight) {
+    // Salvar o viewport atual
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    // Definir viewport do minimapa
+    int minimapWidth = 200;
+    int minimapHeight = 150;
+    glViewport(windowWidth - minimapWidth - 10, windowHeight - minimapHeight - 10,
+               minimapWidth, minimapHeight);
+
+    shader->Activate();
+
+    // Definir as matrizesminimapa
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(0.0f, 5.0f, 0.0f),  // Câmera acima da mesa
+        glm::vec3(0.0f, 0.0f, 0.0f),  // Apontar para o centro da mesa
+        glm::vec3(0.0f, 0.0f, -1.0f)  // Up invertido para visão top-down
+    );
+    glm::mat4 projection = glm::ortho(-2.5f, 2.5f, -1.25f, 1.25f, 0.1f, 10.0f);
+
+    shader->SetMat4("u_Model", model);
+    shader->SetMat4("u_View", view);
+    shader->SetMat4("u_Projection", projection);
+
+    // Desenhar a mesh da mesa
+    tableMesh.Draw();
+
+    // Restaurar viewport original
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+}

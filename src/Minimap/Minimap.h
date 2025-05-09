@@ -1,5 +1,5 @@
-//#pragma once
-//#include <vector>
-//#include <glm/glm.hpp>
-//
-//void drawMinimap(const std::vector<glm::vec3>& points, int windowWidth, int windowHeight);
+#pragma once
+#include "Renderer/Mesh/Mesh.h"
+#include "Renderer/Shader/shaderClass.h"
+
+void drawMinimap(Mesh& tableMesh, Shader* shader, int windowWidth, int windowHeight);

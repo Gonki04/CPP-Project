@@ -3,6 +3,7 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "Shader/shaderClass.h"
+#include "Minimap/Minimap.h"
 
 std::vector<Vertex> vertices = {
     // Frente (Front)
@@ -145,6 +146,9 @@ bool Renderer::Init()
 
     shader = new Shader("resources/default.vert", "resources/default.frag");
 
+    // Table mesh for minimap
+    tableMesh = new Mesh(vertices, indices);
+
     return true;
 }
 
@@ -192,6 +196,8 @@ void Renderer::Display()
 
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
+        drawMinimap(*tableMesh, shader, width, height);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -203,6 +209,7 @@ Renderer::~Renderer()
     delete vbo;
     delete ebo;
     delete shader;
+    delete tableMesh;
     if (window)
     {
         glfwDestroyWindow(window);
