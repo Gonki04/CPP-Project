@@ -21,7 +21,7 @@
 //     FragColor = vec4((ambient + diffuse) * texColor.rgb * Color, 1.0);
 // }
 
-#version 460 core
+#version 450 core
 in vec3 FragPos;
 in vec3 Normal;
 in vec3 Color;
