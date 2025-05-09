@@ -136,10 +136,10 @@ bool Renderer::Init()
     PrintSystemInfo();
 
     // Create table mesh
-    table_mesh = new Mesh(vertices, indices);
+    table_Mesh = new Mesh(vertices, indices);
 
     // generate sphere
-    create_Sphere = new Sphere(0.5f, 18, 9);
+    create_Sphere = new Sphere(0.5f, 72, 36);
 
     // get vertices and indices for sphere
     std::vector<Vertex> sphereVertices;
@@ -151,10 +151,6 @@ bool Renderer::Init()
 
     // create shaders
     shader = new Shader("resources/default.vert", "resources/default.frag");
-
-    // create table mesh in minimap
-    tableMesh_MMap = new Mesh(vertices, indices);
-    sphereMesh_MMap = new Mesh(sphereVertices, sphereIndices);
 
     return true;
 }
@@ -184,7 +180,7 @@ void Renderer::Display()
         lastFrame = currentFrame;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+ 
         shader->Activate();
 
         static float angle = 0.0f;
@@ -206,13 +202,13 @@ void Renderer::Display()
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw the table
-        table_mesh->Draw();
+        table_Mesh->Draw();
 
         // Draw the sphere
         sphere_Mesh->Draw();
 
         // Draw the minimap
-        drawMinimap(*tableMesh_MMap,*sphereMesh_MMap, shader, width, height);
+        drawMinimap(*table_Mesh,*sphere_Mesh, shader, width, height);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

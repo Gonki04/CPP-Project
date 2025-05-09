@@ -32,7 +32,7 @@ private:
     Shader* shader = nullptr;
 
     //for table
-    Mesh* table_mesh;
+    Mesh* table_Mesh;
     //for sphere
     Sphere* create_Sphere;
     Mesh* sphere_Mesh;

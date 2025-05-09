@@ -5,7 +5,6 @@ Sphere::Sphere(float radius, int sectorCount, int stackCount)
     : radius(radius), sectorCount(sectorCount), stackCount(stackCount)
 {
     generateSphere();
-    mesh = new Mesh(vertices, indices);
 }
 
 void Sphere::generateSphere()
