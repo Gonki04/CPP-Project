@@ -9,13 +9,13 @@ struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec3 color;
-	glm::vec2 texUV;
+	glm::vec2 texCords;
 };
 
 class VBO {
 public:
 	GLuint ID;
-	VBO(std::vector <Vertex>& vertices);
+	void BufferData(const std::vector<Vertex>& vertices);
 	void Bind();
 	void Unbind();
 	void Delete();

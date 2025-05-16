@@ -6,11 +6,14 @@
 #include "../EBO.h"
 #include "../VAO.h"
 
+namespace ourSpace
+{
 class Mesh {
 public:
-    Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+    bool Load(const std::string& obj_model_filepath); // Corrigido para corresponder à implementação
     void Draw();
     void SetTransform(const glm::mat4& transform);
+    void Install(); // Corrigido o nome
 
 private:
     VAO m_VAO;
@@ -18,4 +21,8 @@ private:
     EBO m_EBO;
     GLsizei m_IndexCount;
     glm::mat4 m_Transform;
+
+    std::vector<Vertex> m_Vertices;   // Adicionado: guarda os vértices carregados
+    std::vector<GLuint> m_Indices;    // Adicionado: guarda os índices carregados
 };
+}
