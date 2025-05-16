@@ -12,6 +12,11 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 }
 
 void Mesh::setupMesh() {
+
+	if (vertices.empty() || indices.empty()) {
+		std::cerr << "Mesh::setupMesh: vertices or indices are empty!" << std::endl;
+		return;
+	}
 	// Create buffers/arrays
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
