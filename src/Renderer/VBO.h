@@ -1,26 +1,18 @@
-#ifndef VBO_CLASS_H
-#define VBO_CLASS_H
-
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <vector>
-
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 color;
-	glm::vec2 texCords;
-};
-
-class VBO {
-public:
-	GLuint ID;
-	void BufferData(const std::vector<Vertex>& vertices);
-	void Bind();
-	void Unbind();
-	void Delete();
-};
+#include "../headers.h"
 
 
 
-#endif
+	class VBO
+	{
+	public:
+		GLuint ID;
+		// CONSTRUCTOR QUE CRIA O VBO
+
+		VBO(GLfloat* vertices, GLsizeiptr size);
+		// BINDING DO VBO
+		void Bind();
+		// UNBINDING DO VBO
+		void Unbind();
+		// DELETAR O VBO
+		void Delete();
+	};

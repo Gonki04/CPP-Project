@@ -1,28 +1,33 @@
-#pragma once
+#include "../../headers.h"
+#include "../Shader/shaderClass.h"
 
-#include <vector>
-#include <glm/glm.hpp>
-#include "../VBO.h"  // This includes Vertex struct
-#include "../EBO.h"
-#include "../VAO.h"
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec2 TexCoords;
+};
 
-namespace ourSpace
+struct Texture {
+	unsigned int id;
+	std::string type;
+};
+
+class Mesh
 {
-class Mesh {
 public:
-    bool Load(const std::string& obj_model_filepath); // Corrigido para corresponder à implementação
-    void Draw();
-    void SetTransform(const glm::mat4& transform);
-    void Install(); // Corrigido o nome
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture> textures;
+
+	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+
+	void setupMesh();
+
+	void Draw(Shader &shader);
+		
 
 private:
-    VAO m_VAO;
-    VBO m_VBO;
-    EBO m_EBO;
-    GLsizei m_IndexCount;
-    glm::mat4 m_Transform;
+	GLuint VAO, VBO, EBO;
 
-    std::vector<Vertex> m_Vertices;   // Adicionado: guarda os vértices carregados
-    std::vector<GLuint> m_Indices;    // Adicionado: guarda os índices carregados
+
 };
-}

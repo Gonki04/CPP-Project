@@ -1,43 +1,53 @@
-﻿//#include <Camera/Camera.h>
-//#include "Minimap/Minimap.h"
-#include <Renderer/Renderer.h>
-#include <Windows.h>
-#include <iostream>
+﻿#include "headers.h"
+#include "Renderer/Renderer.h"
 
-extern "C"
+
+
+
+int main(int argc, char* argv[])
 {
-	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+
+	// Initialize GLFW
+	if (!glfwInit())
+	{
+		std::cerr << "Failed to initialize GLFW" << std::endl;
+		return -1;
+	}
+	// Create a windowed mode window and its OpenGL context
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
+	if (!window)
+	{
+		std::cerr << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+	// Initialize GLEW
+	if (glewInit() != GLEW_OK)
+	{
+		std::cerr << "Failed to initialize GLEW" << std::endl;
+		return -1;
+	}
+
+	Render::Renderer renderer;
+
+	renderer.Load("resources/Assets/Ball1.obj");
+
+	renderer.Install();
+
+	while (!glfwWindowShouldClose(window))
+	{
+		// Clear the colorbuffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Render the loaded model
+		renderer.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		// Swap the screen buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+	glfwDestroyWindow(window);
+	glfwTerminate();
+
+	return 1;
 }
 
-namespace
-{
-	constexpr int kWidth = 800;
-	constexpr int kHeight = 600;
-	constexpr float kInitialZoom = 10.0f;
-	constexpr float kRotationSpeed = 0.001f;
-	GLfloat kAngle = 0.0f;
-} // namespace
-
-
-int main() {
-    try {
-        Renderer renderer(kWidth, kHeight, "OpenGL Application");
-
-        if (!renderer.Init()) {
-            std::cerr << "Renderer initialization failed!" << std::endl;
-            return -1;
-        }
-
-        std::cout << "Application started successfully" << std::endl;
-
-        renderer.Display();
-
-        return 0;
-    }
-
-
-    catch (const std::exception& e) {
-        std::cerr << "Fatal error: " << e.what() << std::endl;
-        return -1;
-    }
-}
