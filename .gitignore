@@ -30,7 +30,6 @@ Makefile
 *.swp
 *.bak
 *.o
-*.obj
 *.pyc
 *.pyo
 *.class
