@@ -11,8 +11,8 @@ extern "C"
 
 namespace
 {
-	constexpr int kWidth = 800;
-	constexpr int kHeight = 600;
+	constexpr int kWidth = 2560;
+	constexpr int kHeight = 1440;
 	constexpr float kInitialZoom = 10.0f;
 	constexpr float kRotationSpeed = 0.001f;
 	GLfloat kAngle = 0.0f;

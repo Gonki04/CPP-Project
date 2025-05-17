@@ -30,6 +30,7 @@ namespace Render
         void Display();
 
     private:
+        
         GLFWwindow *window = nullptr;
         int width, height;
         std::string title;
