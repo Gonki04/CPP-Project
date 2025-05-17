@@ -1,5 +1,6 @@
 #ifndef VAO_CLASS_H
 #define VAO_CLASS_H
+#pragma once
 
 #include"VBO.h"
 

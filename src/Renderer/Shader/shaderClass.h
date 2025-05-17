@@ -16,8 +16,8 @@ class Shader
 public:
 	GLuint ID;
 	// CONSTRUCTOR THAT BULDS THE SHADER PROGRAM FROM 2 DIFFERENT SHADERS
-	Shader(const char* vertexFile, const char* fragmentFile);
-
+	Shader();
+	void LoadShader(const char* vertexFile, const char* fragmentFile);
 	void Activate();
 	void Delete();
 

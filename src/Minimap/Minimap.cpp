@@ -32,8 +32,8 @@ void drawMinimap(Mesh& tableMesh,Mesh& sphereMesh, Shader* shader, int windowWid
     shader->SetMat4("u_Projection", projection);
 
     // Desenhar a mesh da mesa
-    tableMesh.Draw();
-    sphereMesh.Draw();
+    //tableMesh.Draw();
+    //sphereMesh.Draw();
 
     // Restaurar viewport original
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);

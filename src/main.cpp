@@ -21,8 +21,7 @@ namespace
 
 int main() {
     try {
-        Renderer renderer(kWidth, kHeight, "OpenGL Application");
-
+        Render::Renderer renderer(kWidth, kHeight, "OpenGL Application");
         if (!renderer.Init()) {
             std::cerr << "Renderer initialization failed!" << std::endl;
             return -1;
@@ -31,7 +30,6 @@ int main() {
         std::cout << "Application started successfully" << std::endl;
 
         renderer.Display();
-
         return 0;
     }
 

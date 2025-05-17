@@ -37,7 +37,7 @@ void Sphere::generateSphere()
             glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
 
             // Adicionar vértice
-            vertices.push_back({glm::vec3(x, y, z), normal, color, glm::vec2(u, v)});
+            //vertices.push_back({glm::vec3(x, y, z), normal, color, glm::vec2(u, v)});
         }
     }
 

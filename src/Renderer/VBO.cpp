@@ -1,5 +1,9 @@
 #include "VBO.h"
 
+VBO::VBO() {
+	glGenBuffers(1, &ID);
+}
+
 void VBO::BufferData(const std::vector<Vertex>& vertices) {
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }

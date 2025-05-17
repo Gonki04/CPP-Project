@@ -1,92 +1,76 @@
 #include "Mesh.h"
-#include <GL/glew.h>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
-namespace ourSpace
+
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 {
-    bool Mesh::Load(const std::string &obj_model_filepath)
-    {
-        std::ifstream file(obj_model_filepath);
-        if (!file.is_open())
-        {
-            std::cerr << "Erro ao abrir o ficheiro: " << obj_model_filepath << std::endl;
-            return false;
-        }
+	this->vertices = vertices;
+	this->indices = indices;
+	this->textures = textures;
 
-        std::vector<glm::vec3> positions;
-        std::vector<glm::vec3> normals;
-        std::vector<glm::vec2> texCoords;
-        m_Vertices.clear();
-        m_Indices.clear();
 
-        std::string line;
-        while (std::getline(file, line))
-        {
-            std::istringstream iss(line);
-            std::string prefix;
-            iss >> prefix;
+	setupMesh();
+}
 
-            if (prefix == "v")
-            {
-                glm::vec3 pos;
-                iss >> pos.x >> pos.y >> pos.z;
-                positions.push_back(pos);
-            }
-            else if (prefix == "vn")
-            {
-                glm::vec3 normal;
-                iss >> normal.x >> normal.y >> normal.z;
-                normals.push_back(normal);
-            }
-            else if (prefix == "vt")
-            {
-                glm::vec2 tex;
-                iss >> tex.x >> tex.y;
-                texCoords.push_back(tex);
-            }
-            else if (prefix == "f")
-            {
-                unsigned int vIdx[3], tIdx[3], nIdx[3];
-                char slash;
-                for (int i = 0; i < 3; ++i)
-                {
-                    iss >> vIdx[i] >> slash >> tIdx[i] >> slash >> nIdx[i];
-                    Vertex vertex;
-                    vertex.position = positions[vIdx[i] - 1];
-                    vertex.normal = normals[nIdx[i] - 1];
-                    vertex.texCords = texCoords[tIdx[i] - 1];
-                    m_Vertices.push_back(vertex);
-                    m_Indices.push_back(static_cast<GLuint>(m_Vertices.size() - 1));
-                }
-            }
-        }
+void Mesh::setupMesh() {
+   
+	if (vertices.empty() || indices.empty()) {
+		std::cerr << "Mesh::setupMesh: vertices or indices are empty!" << std::endl;
+		return;
+	}
+	// Create buffers/arrays
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
+	// Bind Vertex Array Object
+	glBindVertexArray(vao);
+	// Bind and set vertex buffer(s)
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	// Bind and set element buffer(s)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	// Set vertex attribute pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	// Normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
+	glEnableVertexAttribArray(1);
+	// Texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+	glEnableVertexAttribArray(2);
+	// Unbind VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Unbind VAO
+	glBindVertexArray(0);
 
-        m_IndexCount = static_cast<GLsizei>(m_Indices.size());
-        return true;
-    }
+    
 
-    void Mesh::Install()
-    {
-        m_VAO.Bind();
+}
 
-        m_VBO.Bind();
-        m_VBO.BufferData(m_Vertices); // envia para GPU
 
-        m_EBO.Bind();
-        m_EBO.BufferData(m_Indices); // envia para GPU
+void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and setup view model projection for testing
+	shader.Activate();
+	shader.SetMat4("u_Model", model);
 
-        // Configurar atributos dos vértices (posição, normal, UV)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0); // posição
-        glEnableVertexAttribArray(0);
+	// Bind textures if any
+	for (unsigned int i = 0; i < textures.size(); ++i) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		// Optionally set sampler uniform if needed
+		// shader.SetInt("texture" + std::to_string(i), i);
+	}
+	glActiveTexture(GL_TEXTURE0); // Reset active texture
 
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal)); // normal
-        glEnableVertexAttribArray(1);
+	// Draw mesh
+    glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCords)); // UV
-        glEnableVertexAttribArray(2);
-
-        m_VAO.Unbind();
-    }
+	// Unbind textures
+	for (unsigned int i = 0; i < textures.size(); ++i) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	glActiveTexture(GL_TEXTURE0);
 }
