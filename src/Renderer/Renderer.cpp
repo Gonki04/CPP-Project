@@ -2,7 +2,7 @@
 
 namespace Render
 {
-    Camera camera(2560, 1440, glm::vec3(-20.0f, 5.0f, 0.0f));
+    Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
     void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
@@ -48,6 +48,7 @@ namespace Render
         }
 
         glfwMakeContextCurrent(window);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
         // Initialize GLEW
