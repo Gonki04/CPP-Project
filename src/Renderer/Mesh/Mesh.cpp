@@ -11,40 +11,29 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 	setupMesh();
 }
 
+
+
 void Mesh::setupMesh() {
    
 	if (vertices.empty() || indices.empty()) {
 		std::cerr << "Mesh::setupMesh: vertices or indices are empty!" << std::endl;
 		return;
 	}
-	// Create buffers/arrays
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
-	// Bind Vertex Array Object
-	glBindVertexArray(vao);
-	// Bind and set vertex buffer(s)
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-	// Bind and set element buffer(s)
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-	// Set vertex attribute pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	// Normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
-	glEnableVertexAttribArray(1);
-	// Texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
-	glEnableVertexAttribArray(2);
-	// Unbind VBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// Unbind VAO
-	glBindVertexArray(0);
 
-    
+	m_VAO.Bind();
+	m_VBO.Bind();
+	m_EBO.Bind();
 
+	m_VBO.BufferData(vertices);
+	m_EBO.BufferData(indices);
+
+	m_VAO.LinkVBO(m_VBO, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
+	m_VAO.LinkVBO(m_VBO, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	m_VAO.LinkVBO(m_VBO, 2, 2, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+
+	m_VAO.Unbind();
+	m_VBO.Unbind();
+	m_EBO.Unbind();
 }
 
 
@@ -61,11 +50,11 @@ void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and
 	}
 	glActiveTexture(GL_TEXTURE0); // Reset active texture
 
-	// Draw mesh
-    glBindVertexArray(vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+    m_VAO.Bind();
+	m_EBO.Bind();
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	m_VAO.Unbind();
 
 	// Unbind textures
 	for (unsigned int i = 0; i < textures.size(); ++i) {
@@ -74,3 +63,4 @@ void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and
 	}
 	glActiveTexture(GL_TEXTURE0);
 }
+

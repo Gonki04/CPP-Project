@@ -23,7 +23,6 @@ public:
 		
 
 private:
- GLuint vao, vbo, ebo;
 	VAO m_VAO;
     VBO m_VBO;
     EBO m_EBO;
