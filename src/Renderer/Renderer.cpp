@@ -101,14 +101,19 @@ namespace Render
         glfwSetCursorPosCallback(window, mouse_callback);
         while (!glfwWindowShouldClose(window))
         {
-
+            glm::vec3 lightPos = glm::vec3(4.0f, 4.0f, 4.0f);
             currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.Activate();
-            
+            shader.SetVec3("lightPos", lightPos);
+            shader.SetVec3("viewPos", camera.Position);
+            shader.SetVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+            shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+            shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+            shader.SetFloat("material.shininess", 32.0f);
             
             camera.HandleKeyboardInput(window, deltaTime);
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");

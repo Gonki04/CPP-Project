@@ -1,39 +1,38 @@
-// #version 460 core
-// in vec3 FragPos;
-// in vec3 Normal;
-// in vec3 Color;
-// in vec2 TexCoord;
-
-// uniform sampler2D texture1;
-// uniform vec3 u_ViewPos;
-
-// out vec4 FragColor;
-
-// void main() {
-//     // Simple textured lighting
-//     vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));
-//     float diff = max(dot(normalize(Normal), lightDir), 0.0);
-//     vec3 diffuse = diff * vec3(1.0);
-    
-//     vec3 ambient = vec3(0.1);
-//     vec4 texColor = texture(texture1, TexCoord);
-    
-//     FragColor = vec4((ambient + diffuse) * texColor.rgb * Color, 1.0);
-// }
-
 #version 450 core
 in vec3 FragPos;
 in vec3 Normal;
 in vec3 Color;
 in vec2 TexCoord;
 
+struct Material {
+vec3 ambient;
+vec3 diffuse;
+vec3 specular;
+float shininess;
+};
+
+uniform vec3 lightPos; 
+uniform Material material;
+uniform vec3 viewPos;
+
 out vec4 FragColor;
 
-void main() {
-    vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));
-    float diff = max(dot(normalize(Normal), lightDir), 0.0);
-    vec3 diffuse = diff * vec3(1.0);
-    vec3 ambient = vec3(0.1);
 
-    FragColor = vec4((ambient + diffuse) * Color, 1.0);
+void main() {
+    
+    vec3 ambient = material.ambient * Color;
+
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos); // Directional light
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = material.diffuse * diff * Color;
+
+    vec3 viewDir = normalize(viewPos - FragPos); // Camera direction
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = Color * (material.specular * spec);
+
+    vec3 result = ambient + diffuse + specular;
+
+    FragColor = vec4(result, 1.0);
 }

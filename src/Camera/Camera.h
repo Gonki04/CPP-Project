@@ -12,6 +12,7 @@
 class Camera
 {
 public:
+    glm::vec3 Position;
 
 
     int width;
@@ -29,7 +30,6 @@ public:
     void HandleKeyboardInput(GLFWwindow *window, float deltaSpeed);
     void ProcessMouseRotation(GLFWwindow* window, double xpos, double ypos);
 private:
-    glm::vec3 Position;
     glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
 };
