@@ -52,7 +52,6 @@ void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and
 
 
     m_VAO.Bind();
-	m_EBO.Bind();
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 	m_VAO.Unbind();
 
