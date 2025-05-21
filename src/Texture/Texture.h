@@ -1,23 +1,27 @@
-//#pragma once
-//#include <string>
-//
-//class Texture {
-//public:
-//    Texture(const std::string& filePath, GLenum slot = GL_TEXTURE0);
-//    ~Texture();
-//
-//    void Bind() const;
-//    void Unbind() const;
-//    void SetSlot(GLenum newSlot);
-//
-//    inline GLuint GetID() const { return m_ID; }
-//    inline GLenum GetSlot() const { return m_Slot; }
-//
-//private:
-//    GLuint m_ID;
-//    GLenum m_Slot;
-//    int m_Width, m_Height, m_NrChannels;
-//
-//    void LoadFromFile(const std::string& filePath);
-//};
-//#pragma once
+#pragma once
+#include <string>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <stb_image.h>
+#include <map>
+
+struct Material {
+    glm::vec3 ambient = glm::vec3(0.0f);
+    glm::vec3 diffuse = glm::vec3(0.0f);
+    glm::vec3 specular = glm::vec3(0.0f);
+    float shininess = 0.0f;
+};
+
+class Texture {
+public:
+    Texture();
+    ~Texture();
+
+    static unsigned int LoadTexture(const std::string& path);
+    static void LoadMTL(const std::string& mtlFilePath, std::map<std::string, Material>& materials);
+    static std::string GetTexturePath(const std::string& basePath, const std::string& textureName);
+
+private:
+    static void SetupTextureParameters(unsigned int textureID);
+};
+#pragma once
