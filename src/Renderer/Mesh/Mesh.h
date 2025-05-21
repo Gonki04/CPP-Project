@@ -9,12 +9,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Shader/shaderClass.h"
+#include "../../Texture/Texture.h"
 
-struct Texture
-{
-	unsigned int id;
-	std::string type;
-};
+// struct Texture
+//{
+// 	unsigned int id;
+// 	std::string type;
+// };
 
 class Mesh
 {
@@ -27,6 +28,7 @@ public:
 	void Render(glm::vec3 position, glm::vec3 orientation);
 
 private:
+	std::map<std::string, Material> materials;
 	VAO m_VAO;
 	VBO m_VBO;
 	EBO m_EBO;

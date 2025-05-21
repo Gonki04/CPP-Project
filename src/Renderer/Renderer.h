@@ -13,6 +13,7 @@
 #include "Mesh/Mesh.h"
 #include "Inputs/InputController.h"
 #include <tuple>
+#include "../Texture/Texture.h"
 #pragma once
 
 namespace Render
@@ -27,7 +28,7 @@ namespace Render
         void Display();
 
     private:
-        
+        std::map<std::string, Material> materials;
         GLFWwindow *window = nullptr;
         int width, height;
         std::string title;

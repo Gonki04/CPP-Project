@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "../../Texture/Texture.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
@@ -45,6 +46,9 @@ void Mesh::Load(std::string obj_model_filepath)
 	std::vector<unsigned int> indices;
 	std::map<std::tuple<int, int, int>, unsigned int> uniqueVertexMap;
 	std::fstream file(obj_model_filepath, std::ios::in);
+	std::map<std::string, Material> materials;
+	std::string currentMaterialName;
+	std::string mtlFilePath;
 	if (!file.is_open())
 	{
 		std::cerr << "Could not open the file!" << std::endl;
@@ -114,17 +118,34 @@ void Mesh::Load(std::string obj_model_filepath)
 				indices.push_back(uniqueVertexMap[key]);
 			}
 		}
-		else if (prefix == "usemtl") // Material
-		{
-			std::string materialName;
-			iss >> materialName;
-			// Optionally store material name if needed
-		}
 		else if (prefix == "mtllib") // Material library
 		{
-			std::string mtlFileName;
-			iss >> mtlFileName;
-			// Optionally load material library if needed
+			iss >> mtlFilePath;
+			mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
+			Texture::LoadMTL(mtlFilePath, materials);
+			std::cout << "mtlFilePath: " << mtlFilePath << std::endl;
+		}
+		else if (prefix == "usemtl") {
+			std::cout << "usemtl entered" << std::endl;
+			iss >> currentMaterialName;
+			if (materials.find(currentMaterialName) != materials.end()) {
+				const Material& mat = materials[currentMaterialName];
+				shader.SetVec3("material.ambient", mat.ambient);
+				shader.SetVec3("material.diffuse", mat.diffuse);
+				shader.SetVec3("material.specular", mat.specular);
+				shader.SetFloat("material.shininess", mat.shininess);
+				std::cout << "material.ambient: " << mat.ambient.x << std::endl;
+				std::cout << "material.diffuse: " << mat.diffuse.x << std::endl;
+				std::cout << "material.specular: " << mat.specular.x << std::endl;
+				std::cout << "material.shininess: " << mat.shininess << std::endl;
+				
+				if (mat.diffuseMap != 0) {
+					Texture texture;
+					texture.id = mat.diffuseMap;
+					texture.type = "texture_diffuse";
+					textures.push_back(texture);
+				}
+			}
 		}
 	}
 	file.close();
