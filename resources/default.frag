@@ -29,7 +29,7 @@ void main() {
 
     vec3 viewDir = normalize(viewPos - FragPos); // Camera direction
 
-    vec3 halfwayDir = normalize(lightDir + viewDir); // Halfway vector
+    vec3 halfwayDir = normalize(lightDir + viewDir); // Blinn-Phong
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
 
     //vec3 reflectDir = reflect(-lightDir, norm);

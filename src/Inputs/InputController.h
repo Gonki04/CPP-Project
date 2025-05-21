@@ -11,7 +11,9 @@ public:
     ~InputController();
 
     void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-    void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+    void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    void CursorCallback(GLFWwindow* window, double xpos, double ypos);
+    void SetCallbacks(GLFWwindow* window);
 
     // Luzes
     bool lightKeys[4] = {false, false, false, false};

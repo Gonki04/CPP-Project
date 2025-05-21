@@ -43,6 +43,6 @@ namespace Render
 
         void SetupOpenGL();
         void PrintSystemInfo();
-        void SetCallbacks();
+        void SetCallbacksCam();
     };
 }
