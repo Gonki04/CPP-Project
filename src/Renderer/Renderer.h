@@ -30,7 +30,7 @@ namespace Render
         void Display();
 
     private:
-        
+        std::map<std::string, Material> materials;
         GLFWwindow *window = nullptr;
         int width, height;
         std::string title;

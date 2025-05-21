@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <Texture.h>
 
 namespace Render
 {
@@ -138,6 +139,9 @@ namespace Render
         std::vector<unsigned int> indices;
         std::map<std::tuple<int, int, int>, unsigned int> uniqueVertexMap;
         std::fstream file(obj_model_filepath, std::ios::in);
+        std::map<std::string, Material> materials;
+        std::string currentMaterialName;
+        std::string mtlFilePath;
         if (!file.is_open())
         {
             std::cerr << "Could not open the file!" << std::endl;
@@ -207,17 +211,28 @@ namespace Render
                     indices.push_back(uniqueVertexMap[key]);
                 }
             }
-            else if (prefix == "usemtl") // Material
-            {
-                std::string materialName;
-                iss >> materialName;
-                // Optionally store material name if needed
-            }
             else if (prefix == "mtllib") // Material library
             {
-                std::string mtlFileName;
-                iss >> mtlFileName;
-                // Optionally load material library if needed
+                iss >> mtlFilePath;
+            mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
+            Texture::LoadMTL(mtlFilePath, materials);
+            }
+            else if (prefix == "usemtl") {
+                iss >> currentMaterialName;
+                if (materials.find(currentMaterialName) != materials.end()) {
+                    const Material& mat = materials[currentMaterialName];
+                    shader.SetVec3("material.ambient", mat.ambient);
+                    shader.SetVec3("material.diffuse", mat.diffuse);
+                    shader.SetVec3("material.specular", mat.specular);
+                    shader.SetFloat("material.shininess", mat.shininess);
+                    
+                    if (mat.diffuseMap != 0) {
+                        Texture texture;
+                        texture.id = mat.diffuseMap;
+                        texture.type = "texture_diffuse";
+                        textures.push_back(texture);
+                    }
+                }
             }
         }
         file.close();
