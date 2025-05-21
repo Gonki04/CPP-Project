@@ -27,12 +27,12 @@ void main() {
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = material.diffuse * diff * Color;
 
-    //vec3 viewDir = normalize(viewPos - FragPos); // Camera direction
+    vec3 viewDir = normalize(viewPos - FragPos); // Camera direction
 
-    vec3 halfwayDir = normalize(lightDir + viewDir); // Halfway vector
+    vec3 halfwayDir = normalize(lightDir + viewDir); // Blinn-Phong
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
 
-    vec3 reflectDir = reflect(-lightDir, norm);
+    //vec3 reflectDir = reflect(-lightDir, norm);
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = Color * (material.specular * spec);
 

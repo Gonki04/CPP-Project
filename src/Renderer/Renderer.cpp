@@ -91,13 +91,6 @@ namespace Render
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     }
 
-    void Renderer::SetCallbacks()
-    {
-        glfwSetScrollCallback(window, [](GLFWwindow *window, double xoffset, double yoffset)
-                              { camera.HandleScroll(yoffset); });
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-
     void Renderer::Display()
     {
         Mesh mesh_table(shader, "resources/Assets/table2.obj");
@@ -110,18 +103,15 @@ namespace Render
 
         inputController = new InputController(&camera, &mesh_table);
 
-        SetCallbacks();
 
         if (inputController)
         {
-            glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos)
-                                     {
-                InputController* inputController = static_cast<InputController*>(glfwGetWindowUserPointer(window));
-                if (inputController)
-                {
-                    inputController->MouseCallback(window, xpos, ypos);
-                } });
-            glfwSetWindowUserPointer(window, inputController);
+            inputController->SetCallbacks(window);
+        }
+        else
+        {
+            std::cerr << "Failed to create InputController" << std::endl;
+            return;
         }
 
         while (!glfwWindowShouldClose(window))
@@ -143,7 +133,7 @@ namespace Render
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
             std::cout << "It has looped" << std::endl;
 
-            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(45.0f, 0.0f, 0.0f));
+            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             //mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
