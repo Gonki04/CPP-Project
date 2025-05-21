@@ -4,8 +4,14 @@
 #include "../VBO.h"
 #include "../EBO.h"
 #include "../VAO.h"
+#include <map>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "../Shader/shaderClass.h"
 
-struct Texture {
+struct Texture
+{
 	unsigned int id;
 	std::string type;
 };
@@ -13,21 +19,20 @@ struct Texture {
 class Mesh
 {
 public:
-	
-
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
-
+	Mesh(std::string obj_model_filepathe);
 	void setupMesh();
-
-	void Draw(Shader& shader, glm::mat4 model = glm::mat4(1.0f));
-		
+	void Draw(Shader &shader, glm::mat4 model = glm::mat4(1.0f));
+	void Load(std::string obj_model_filepath);
+	void Install();
+	void Render(glm::vec3 position, glm::vec3 orientation, Shader &shader);
 
 private:
 	VAO m_VAO;
-    VBO m_VBO;
-    EBO m_EBO;
-    std::vector<Vertex> vertices;
+	VBO m_VBO;
+	EBO m_EBO;
+	Shader shader;
+	std::vector<Mesh> meshes;
+	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
-
 };
