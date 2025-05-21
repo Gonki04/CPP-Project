@@ -123,10 +123,8 @@ void Mesh::Load(std::string obj_model_filepath)
 			iss >> mtlFilePath;
 			mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
 			Texture::LoadMTL(mtlFilePath, materials);
-			std::cout << "mtlFilePath: " << mtlFilePath << std::endl;
 		}
 		else if (prefix == "usemtl") {
-			std::cout << "usemtl entered" << std::endl;
 			iss >> currentMaterialName;
 			if (materials.find(currentMaterialName) != materials.end()) {
 				const Material& mat = materials[currentMaterialName];
@@ -134,10 +132,6 @@ void Mesh::Load(std::string obj_model_filepath)
 				shader.SetVec3("material.diffuse", mat.diffuse);
 				shader.SetVec3("material.specular", mat.specular);
 				shader.SetFloat("material.shininess", mat.shininess);
-				std::cout << "material.ambient: " << mat.ambient.x << std::endl;
-				std::cout << "material.diffuse: " << mat.diffuse.x << std::endl;
-				std::cout << "material.specular: " << mat.specular.x << std::endl;
-				std::cout << "material.shininess: " << mat.shininess << std::endl;
 				
 				if (mat.diffuseMap != 0) {
 					Texture texture;
@@ -192,13 +186,11 @@ void Mesh::Install(void)
 
 void Mesh::Render(glm::vec3 position, glm::vec3 orientation)
 {
-	std::cout << "in degrees" << std::endl << orientation.x << " " << orientation.y << " " << orientation.z << std::endl << "in radians" << std::endl << glm::radians(orientation.x) << std::endl << glm::radians(orientation.y) << std::endl << glm::radians(orientation.z) << std::endl;
+
 	glm::mat4 transform = glm::mat4(1.0f);
-	std::cout << "original matrix: " << glm::to_string(transform) << std::endl;
 	transform = glm::translate(transform, position);
-	transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Yaw (Y)
-	transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Pitch (X)
-	transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
-	std::cout << "rotated matrix: " << glm::to_string(transform) << std::endl;
+	transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f)); 
+	transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f)); 
+	transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f)); 
 	Draw(shader, transform);
 }

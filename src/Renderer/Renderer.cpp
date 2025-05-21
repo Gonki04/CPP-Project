@@ -12,14 +12,12 @@ namespace Render
     Renderer::Renderer(int width, int height, const std::string &title)
         : width(width), height(height), title(title)
     {
-        std::cout << "Renderer constructor start" << std::endl;
         // Set error callback first
         glfwSetErrorCallback(GLFWErrorCallback);
 
         currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        std::cout << "Renderer constructor end" << std::endl;
     }
 
     bool Renderer::Init()
@@ -35,7 +33,7 @@ namespace Render
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
+        //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
 
 
         // Create window
@@ -48,6 +46,7 @@ namespace Render
         }
 
         glfwMakeContextCurrent(window);
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         // Initialize GLEW
@@ -100,8 +99,9 @@ namespace Render
 
     void Renderer::Display()
     {
+        shader.Activate();
         Mesh mesh_table(shader, "resources/Assets/table2.obj");
-        Mesh mesh_ball1(shader, "resources/Assets/Ball1.obj");
+        GeneratePoolBalls();
 
         InputController *inputController = nullptr;
         glm::vec3 Tpose = mesh_table.GetCenter();
@@ -126,24 +126,20 @@ namespace Render
 
         while (!glfwWindowShouldClose(window))
         {
-            glm::vec3 lightPos = glm::vec3(4.0f, 4.0f, 4.0f);
+            glm::vec3 lightPos = glm::vec3(0.0f, 10.0f, 0.0f);
             currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            shader.Activate();
             shader.SetVec3("lightPos", lightPos);
             shader.SetVec3("viewPos", camera.Position);
-            shader.SetVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-            shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-            shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-            shader.SetFloat("material.shininess", 32.0f);
+
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
-            std::cout << "It has looped" << std::endl;
 
             mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            DrawPoolBalls();
             //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             //mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
@@ -167,4 +163,62 @@ namespace Render
         }
         glfwTerminate();
     }
+
+
+    void Renderer::GeneratePoolBalls()
+    {
+        std::string obj_model_filepath = "resources/Assets/";
+        std::string obj_model_fileextension = ".obj";
+
+        for (int i = 1; i < 16; ++i)
+        {
+            std::string obj_model_filename = "Ball" + std::to_string(i) + obj_model_fileextension;
+            std::string full_path = obj_model_filepath + obj_model_filename;
+            Mesh ball(shader, full_path);
+
+            poolBalls.push_back(ball);
+        }
+
+    }
+
+void Renderer::DrawPoolBalls()
+{
+    // Parameters for triangle layout
+    float ballRadius = 1.0f; // Adjust to your model's scale
+    float rowSpacing = ballRadius * 2.0f; // Distance between rows
+    float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
+
+    glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f); // Center of the triangle base
+
+    int ballIndex = 0;
+    for (int row = 0; row < 5; ++row)
+    {
+        int ballsInRow = row + 1;
+        // Center the row horizontally
+        float rowZ = basePosition.z + (row * rowSpacing);
+        float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
+
+        for (int col = 0; col < ballsInRow; ++col)
+        {
+            if (ballIndex >= poolBalls.size())
+                return;
+
+            float x = rowZ;
+            float y = basePosition.y;
+            float z = rowStartX + col * colSpacing;
+
+            poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+            ++ballIndex;
+        }
+    }
+}
+
+
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }

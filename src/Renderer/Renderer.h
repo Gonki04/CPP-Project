@@ -16,6 +16,8 @@
 #include "../Texture/Texture.h"
 #pragma once
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 namespace Render
 {
     class Renderer
@@ -40,6 +42,9 @@ namespace Render
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
+        std::vector<Mesh> poolBalls;
+        void DrawPoolBalls();
+        void GeneratePoolBalls();
 
         void SetupOpenGL();
         void PrintSystemInfo();
