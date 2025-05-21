@@ -18,5 +18,5 @@ void main() {
     TexCoord = aTexCoord;
     Color = aColor;
     
-    gl_Position = u_ViewProjection * u_Model * vec4(FragPos, 1.0);
+    gl_Position = u_ViewProjection * u_Model * vec4(aPos, 1.0);
 }
