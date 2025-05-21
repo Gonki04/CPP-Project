@@ -93,8 +93,8 @@ namespace Render
 
     void Renderer::Display()
     {
-        Mesh mesh_table("resources/Assets/table.obj");
-        Mesh mesh_ball1("resources/Assets/Ball1.obj");
+        Mesh mesh_table(shader, "resources/Assets/table.obj");
+        Mesh mesh_ball1(shader, "resources/Assets/Ball1.obj");
 
         glfwSetCursorPosCallback(window, mouse_callback);
         while (!glfwWindowShouldClose(window))
@@ -116,8 +116,10 @@ namespace Render
             camera.HandleKeyboardInput(window, deltaTime);
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
             std::cout << "It has looped" << std::endl;
-            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shader);
-            mesh_ball1.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shader);
+
+            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
             // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);

@@ -1,14 +1,14 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::string obj_model_filepath)
+Mesh::Mesh(Shader &shader, std::string obj_model_filepath)
 {
+	this->shader = shader;
 	Load(obj_model_filepath);
 	Install();
 }
 
 void Mesh::Draw(Shader &shader, glm::mat4 model)
 { // use my default shaders and setup view model projection for testing
-	shader.Activate();
 	shader.SetMat4("u_Model", model);
 
 	// Bind textures if any
@@ -156,7 +156,10 @@ void Mesh::Install(void)
 	m_EBO.Unbind();
 }
 
-void Mesh::Render(glm::vec3 position, glm::vec3 orientation, Shader &shader)
+void Mesh::Render(glm::vec3 position, glm::vec3 orientation)
 {
-	Draw(shader, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)), glm::vec3(0.0f, 3.0f, 0.0f)));
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, position);
+	//transform = glm::rotate(transform, glm::radians(90.0f), orientation);
+	Draw(shader, transform);
 }

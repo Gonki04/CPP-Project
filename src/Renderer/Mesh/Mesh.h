@@ -19,12 +19,12 @@ struct Texture
 class Mesh
 {
 public:
-	Mesh(std::string obj_model_filepathe);
+	Mesh(Shader &shader, std::string obj_model_filepathe);
 	void setupMesh();
 	void Draw(Shader &shader, glm::mat4 model = glm::mat4(1.0f));
 	void Load(std::string obj_model_filepath);
 	void Install();
-	void Render(glm::vec3 position, glm::vec3 orientation, Shader &shader);
+	void Render(glm::vec3 position, glm::vec3 orientation);
 
 private:
 	VAO m_VAO;
