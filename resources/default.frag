@@ -29,11 +29,11 @@ void main() {
 
     vec3 viewDir = normalize(viewPos - FragPos); // Camera direction
 
-    //vec3 halfwayDir = normalize(lightDir + viewDir); // Halfway vector
-    //float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
+    vec3 halfwayDir = normalize(lightDir + viewDir); // Halfway vector
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
 
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    //vec3 reflectDir = reflect(-lightDir, norm);
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = Color * (material.specular * spec);
 
     vec3 result = ambient + diffuse + specular;
