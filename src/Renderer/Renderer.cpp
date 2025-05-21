@@ -95,6 +95,7 @@ namespace Render
 
     void Renderer::Display()
     {
+        shader.Activate();
         Load("resources/Assets/Ball1.obj");
         Install();
         Load("resources/Assets/table.obj");
@@ -108,17 +109,13 @@ namespace Render
             lastFrame = currentFrame;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            shader.Activate();
+            
             shader.SetVec3("lightPos", lightPos);
             shader.SetVec3("viewPos", camera.Position);
-            shader.SetVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-            shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-            shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-            shader.SetFloat("material.shininess", 32.0f);
+            shader.SetMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f)));
             
             camera.HandleKeyboardInput(window, deltaTime);
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
-            std::cout << "It has looped" << std::endl;
             Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
@@ -216,8 +213,10 @@ namespace Render
                 iss >> mtlFilePath;
                 mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
                 Texture::LoadMTL(mtlFilePath, materials);
+                std::cout << "mtlFilePath: " << mtlFilePath << std::endl;
             }
             else if (prefix == "usemtl") {
+                std::cout << "usemtl entered" << std::endl;
                 iss >> currentMaterialName;
                 if (materials.find(currentMaterialName) != materials.end()) {
                     const Material& mat = materials[currentMaterialName];
@@ -225,6 +224,10 @@ namespace Render
                     shader.SetVec3("material.diffuse", mat.diffuse);
                     shader.SetVec3("material.specular", mat.specular);
                     shader.SetFloat("material.shininess", mat.shininess);
+                    std::cout << "material.ambient: " << mat.ambient.x << std::endl;
+                    std::cout << "material.diffuse: " << mat.diffuse.x << std::endl;
+                    std::cout << "material.specular: " << mat.specular.x << std::endl;
+                    std::cout << "material.shininess: " << mat.shininess << std::endl;
                     
                     if (mat.diffuseMap != 0) {
                         Texture texture;

@@ -45,6 +45,7 @@ target_link_libraries(CPP_Project PRIVATE
 target_include_directories(CPP_Project PRIVATE
     ${SOURCE_ROOT}
     extern/glew/include
+    extern/stb_image
 )
 
 # Windows-specific resource copying

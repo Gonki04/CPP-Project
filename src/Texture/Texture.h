@@ -3,11 +3,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <map>
-
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#endif
+#include "../../extern/stb_image/stb_image.h"
 
 struct Material {
     glm::vec3 ambient = glm::vec3(0.0f);
