@@ -20,7 +20,6 @@ class Mesh
 {
 public:
 	Mesh(Shader &shader, std::string obj_model_filepathe);
-	void setupMesh();
 	void Draw(Shader &shader, glm::mat4 model = glm::mat4(1.0f));
 	glm::vec3 GetCenter();
 	void Load(std::string obj_model_filepath);

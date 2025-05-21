@@ -103,16 +103,12 @@ namespace Render
         Mesh mesh_table(shader, "resources/Assets/table2.obj");
         Mesh mesh_ball1(shader, "resources/Assets/Ball1.obj");
 
-
         InputController *inputController = nullptr;
-        if (meshes.size() > 1)
-        {
-            glm::vec3 tableCenter = meshes[1].GetCenter();
-            camera.Position = tableCenter + glm::vec3(0.0f, 5.0f, 5.0f);
-            camera.Orientation = glm::normalize(tableCenter - camera.Position);
+        glm::vec3 Tpose = mesh_table.GetCenter();
+        camera.Position = Tpose + glm::vec3(0.0f, 65.0f, 70.0f);
+        camera.Orientation = glm::normalize(Tpose - camera.Position);
 
-            inputController = new InputController(&camera, &meshes[1]);
-        }
+        inputController = new InputController(&camera, &mesh_table);
 
         SetCallbacks();
 
@@ -144,7 +140,6 @@ namespace Render
             shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
             shader.SetFloat("material.shininess", 32.0f);
 
-            camera.HandleKeyboardInput(window, deltaTime);
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
             std::cout << "It has looped" << std::endl;
 
@@ -159,12 +154,6 @@ namespace Render
             glfwPollEvents();
         }
     }
-
-    // load tava aqui
-
-    // install tava aqui
-
-    // redenr tava aqui
 
     Renderer::~Renderer()
     {

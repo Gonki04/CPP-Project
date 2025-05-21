@@ -131,26 +131,16 @@ void Mesh::Load(std::string obj_model_filepath)
 	this->indices = indices;
 	this->textures = textures;
 
-
-	setupMesh();
 }
 
 glm::vec3 Mesh::GetCenter(){
-	if(vertices.empty()) return glm::vec3(0.0f);
-
-	glm::vec3 min = vertices[0].Position;
-	glm::vec3 max = vertices[0].Position;
-
-	for (const auto& vertex : vertices) {
-		min = glm::min(min, vertex.Position);
-		max = glm::max(max, vertex.Position);
+	glm::vec3 center(0.0f);
+	for (const auto &vertex : vertices)
+	{
+		center += vertex.Position;
 	}
-	return (min + max) ; 
-}
-
-void Mesh::setupMesh() {
-   
-	if (vertices.empty() || indices.empty()) {
+	center /= static_cast<float>(vertices.size());
+	return center;
 }
 
 void Mesh::Install(void)
