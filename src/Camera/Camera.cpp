@@ -16,12 +16,12 @@ void Camera::Matrix(float FOVdeg, float nearPlane, float farPlane, Shader &shade
 }
 
 void Camera::HandleScroll(double yoffset) {
-    if (fov_ >= 1.0f && fov_ <= 45.0f)
+    if (fov_ >= 1.0f && fov_ <= 90.0f)
         fov_ -= yoffset;
     if (fov_ <= 1.0f)
         fov_ = 1.0f;
-    if (fov_ >= 45.0f)
-        fov_ = 45.0f;
+    if (fov_ >= 90.0f)
+        fov_ = 90.0f;
 }
 
 

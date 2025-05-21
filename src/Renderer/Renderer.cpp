@@ -105,7 +105,7 @@ namespace Render
 
         InputController *inputController = nullptr;
         glm::vec3 Tpose = mesh_table.GetCenter();
-        camera.Position = Tpose + glm::vec3(0.0f, 65.0f, 70.0f);
+        camera.Position = Tpose + glm::vec3(0.0f, 0.0f, 70.0f);
         camera.Orientation = glm::normalize(Tpose - camera.Position);
 
         inputController = new InputController(&camera, &mesh_table);
@@ -143,9 +143,9 @@ namespace Render
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
             std::cout << "It has looped" << std::endl;
 
-            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(45.0f, 0.0f, 0.0f));
             //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-            mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
+            //mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
             // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
