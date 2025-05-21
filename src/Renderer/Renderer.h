@@ -1,3 +1,4 @@
+#pragma once
 #include "../headers.h"
 #include <GL/glew.h>
 #include <Camera/Camera.h>
@@ -10,9 +11,8 @@
 #include "EBO.h"
 #include "Shader/shaderClass.h"
 #include "Mesh/Mesh.h"
-#include "Sphere.h"
+#include "Inputs/InputController.h"
 #include <tuple>
-#include <map>
 #include "../Texture/Texture.h"
 #pragma once
 
@@ -23,9 +23,6 @@ namespace Render
     public:
         Renderer(int width, int height, const std::string &title);
         ~Renderer();
-        void Load(std::string obj_model_filepath);
-        void Install();
-        void Render(glm::vec3 position, glm::vec3 orientation);
         double deltaTime;
         bool Init();
         void Display();
@@ -40,12 +37,12 @@ namespace Render
         VBO *vbo = nullptr;
         EBO *ebo = nullptr;
         Shader shader;
-        std::vector<Mesh> meshes;
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
 
         void SetupOpenGL();
         void PrintSystemInfo();
+        void SetCallbacks();
     };
 }

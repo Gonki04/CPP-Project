@@ -4,7 +4,6 @@
 namespace Render
 {
     Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
-    void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
     {
@@ -38,7 +37,8 @@ namespace Render
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
-        
+
+
         // Create window
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!window)
@@ -50,7 +50,6 @@ namespace Render
 
         glfwMakeContextCurrent(window);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 
         // Initialize GLEW
         glewExperimental = GL_TRUE;
@@ -93,14 +92,40 @@ namespace Render
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     }
 
+    void Renderer::SetCallbacks()
+    {
+        glfwSetScrollCallback(window, [](GLFWwindow *window, double xoffset, double yoffset)
+                              { camera.HandleScroll(yoffset); });
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
     void Renderer::Display()
     {
         shader.Activate();
-        Load("resources/Assets/Ball1.obj");
-        Install();
-        Load("resources/Assets/table.obj");
-        Install();
-        glfwSetCursorPosCallback(window, mouse_callback);
+        Mesh mesh_table(shader, "resources/Assets/table2.obj");
+        Mesh mesh_ball1(shader, "resources/Assets/Ball1.obj");
+
+        InputController *inputController = nullptr;
+        glm::vec3 Tpose = mesh_table.GetCenter();
+        camera.Position = Tpose + glm::vec3(0.0f, 65.0f, 70.0f);
+        camera.Orientation = glm::normalize(Tpose - camera.Position);
+
+        inputController = new InputController(&camera, &mesh_table);
+
+        SetCallbacks();
+
+        if (inputController)
+        {
+            glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos)
+                                     {
+                InputController* inputController = static_cast<InputController*>(glfwGetWindowUserPointer(window));
+                if (inputController)
+                {
+                    inputController->MouseCallback(window, xpos, ypos);
+                } });
+            glfwSetWindowUserPointer(window, inputController);
+        }
+
         while (!glfwWindowShouldClose(window))
         {
             glm::vec3 lightPos = glm::vec3(4.0f, 4.0f, 4.0f);
@@ -113,11 +138,14 @@ namespace Render
             shader.SetVec3("lightPos", lightPos);
             shader.SetVec3("viewPos", camera.Position);
             shader.SetMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f)));
-            
-            camera.HandleKeyboardInput(window, deltaTime);
-            camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
-            Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
+            camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
+
+            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
+
+            // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
 
             glfwSwapBuffers(window);
@@ -271,30 +299,4 @@ namespace Render
         }
         glfwTerminate();
     }
-
-    void mouse_callback(GLFWwindow *window, double xpos, double ypos)
-    {
-        static bool firstMouse = true;
-        static double lastX = 0.0;
-        static double lastY = 0.0;
-
-        if (firstMouse)
-        {
-            lastX = xpos;
-            lastY = ypos;
-            firstMouse = false;
-        }
-
-        float xoffset = static_cast<float>(xpos - lastX);
-        float yoffset = static_cast<float>(lastY - ypos); // reversed: y ranges bottom to top
-        lastX = xpos;
-        lastY = ypos;
-
-        xoffset *= 0.1f; // Adjust sensitivity
-        yoffset *= 0.1f; // Adjust sensitivity
-
-        // Update camera orientation based on mouse movement
-        camera.ProcessMouseRotation(window, xpos, ypos);
-    }
-
 }
