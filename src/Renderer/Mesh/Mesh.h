@@ -12,7 +12,7 @@
 #include "../../Texture/Texture.h"
 
 // struct Texture
-{
+//{
 // 	unsigned int id;
 // 	std::string type;
 // };
@@ -28,6 +28,7 @@ public:
 	void Render(glm::vec3 position, glm::vec3 orientation);
 
 private:
+	std::map<std::string, Material> materials;
 	VAO m_VAO;
 	VBO m_VBO;
 	EBO m_EBO;
