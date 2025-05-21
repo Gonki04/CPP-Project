@@ -1,9 +1,9 @@
 #include "InputController.h"
 #include <iostream>
 
-InputController::InputController(Camera* camera, Mesh* table_Mesh)
-    : camera(camera), table_Mesh(table_Mesh) {
-    // Supondo que table_Mesh->GetCenter() retorna glm::vec3 do centro da mesa
+InputController::InputController(Camera *camera, Mesh *table_Mesh)
+    : camera(camera), table_Mesh(table_Mesh)
+{
     target = new glm::vec3(table_Mesh->GetCenter());
     yaw = -90.0f;
     pitch = 0.0f;
@@ -13,18 +13,41 @@ InputController::InputController(Camera* camera, Mesh* table_Mesh)
     distanceToTarget = glm::length(camera->Position - *target);
 }
 
-void InputController::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    // Zoom in/out with mouse scroll
+void InputController::SetCallbacks(GLFWwindow* window)
+{
+    glfwSetWindowUserPointer(window, this);
+
+    glfwSetCursorPosCallback(window, [](GLFWwindow* win, double xpos, double ypos) {
+        auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
+        if (controller) controller->CursorCallback(win, xpos, ypos);
+    });
+
+    glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
+        auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
+        if (controller) controller->ScrollCallback(win, xoffset, yoffset);
+    });
+
+    // Se quiser adicionar KeyCallback:
+    glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
+        auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
+        if (controller) controller->KeyCallback(win, key, scancode, action, mods);
+    });
+}
+
+void InputController::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+{
     camera->HandleScroll(yoffset);
 }
 
-void InputController::MouseCallback(GLFWwindow* window, double xpos, double ypos) {
-
-    if(!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS)){
+void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS))
+    {
         return;
     }
 
-    if (firstMouse) {
+    if (firstMouse)
+    {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -39,7 +62,7 @@ void InputController::MouseCallback(GLFWwindow* window, double xpos, double ypos
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    yaw   += xoffset;
+    yaw += xoffset;
     pitch += yoffset;
 
     if (pitch > 89.0f)
@@ -56,4 +79,30 @@ void InputController::MouseCallback(GLFWwindow* window, double xpos, double ypos
 
     camera->Position = *target - direction * distanceToTarget;
     camera->Orientation = glm::normalize(*target - camera->Position);
+}
+
+void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+    {
+        
+    }
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+    {
+
+    }
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+    {
+
+    }
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+    {
+
+    }
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        /* code */
+    }
+    
 }

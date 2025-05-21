@@ -90,13 +90,6 @@ namespace Render
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     }
 
-    void Renderer::SetCallbacks()
-    {
-        glfwSetScrollCallback(window, [](GLFWwindow *window, double xoffset, double yoffset)
-                              { camera.HandleScroll(yoffset); });
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-
     void Renderer::Display()
     {
         shader.Activate();
@@ -110,18 +103,15 @@ namespace Render
 
         inputController = new InputController(&camera, &mesh_table);
 
-        SetCallbacks();
 
         if (inputController)
         {
-            glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos)
-                                     {
-                InputController* inputController = static_cast<InputController*>(glfwGetWindowUserPointer(window));
-                if (inputController)
-                {
-                    inputController->MouseCallback(window, xpos, ypos);
-                } });
-            glfwSetWindowUserPointer(window, inputController);
+            inputController->SetCallbacks(window);
+        }
+        else
+        {
+            std::cerr << "Failed to create InputController" << std::endl;
+            return;
         }
 
         while (!glfwWindowShouldClose(window))
