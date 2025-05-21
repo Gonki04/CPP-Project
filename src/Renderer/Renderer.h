@@ -11,6 +11,7 @@
 #include "Shader/shaderClass.h"
 #include "Mesh/Mesh.h"
 #include "Sphere.h"
+#include "Inputs/InputController.h"
 #include <tuple>
 #include <map>
 #pragma once
@@ -46,5 +47,6 @@ namespace Render
 
         void SetupOpenGL();
         void PrintSystemInfo();
+        void SetCallbacks();
     };
 }

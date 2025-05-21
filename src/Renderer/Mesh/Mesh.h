@@ -20,6 +20,7 @@ public:
 	void setupMesh();
 
 	void Draw(Shader& shader, glm::mat4 model = glm::mat4(1.0f));
+	glm::vec3 GetCenter();
 		
 
 private:

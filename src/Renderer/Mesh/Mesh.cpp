@@ -11,7 +11,18 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 	setupMesh();
 }
 
+glm::vec3 Mesh::GetCenter(){
+	if(vertices.empty()) return glm::vec3(0.0f);
 
+	glm::vec3 min = vertices[0].Position;
+	glm::vec3 max = vertices[0].Position;
+
+	for (const auto& vertex : vertices) {
+		min = glm::min(min, vertex.Position);
+		max = glm::max(max, vertex.Position);
+	}
+	return (min + max) ; 
+}
 
 void Mesh::setupMesh() {
    
@@ -52,7 +63,6 @@ void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and
 
 
     m_VAO.Bind();
-	m_EBO.Bind();
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 	m_VAO.Unbind();
 

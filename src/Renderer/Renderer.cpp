@@ -3,7 +3,6 @@
 namespace Render
 {
     Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
-    void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
     {
@@ -37,7 +36,7 @@ namespace Render
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
-        
+
         // Create window
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!window)
@@ -49,7 +48,6 @@ namespace Render
 
         glfwMakeContextCurrent(window);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 
         // Initialize GLEW
         glewExperimental = GL_TRUE;
@@ -92,13 +90,44 @@ namespace Render
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     }
 
+    void Renderer::SetCallbacks()
+    {
+        glfwSetScrollCallback(window, [](GLFWwindow *window, double xoffset, double yoffset)
+                              { camera.HandleScroll(yoffset); });
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
     void Renderer::Display()
     {
         Load("resources/Assets/Ball1.obj");
         Install();
-        Load("resources/Assets/table.obj");
+        Load("resources/Assets/table2.obj");
         Install();
-        glfwSetCursorPosCallback(window, mouse_callback);
+
+        InputController *inputController = nullptr;
+        if (meshes.size() > 1)
+        {
+            glm::vec3 tableCenter = meshes[1].GetCenter();
+            camera.Position = tableCenter + glm::vec3(0.0f, 5.0f, 5.0f);
+            camera.Orientation = glm::normalize(tableCenter - camera.Position);
+
+            inputController = new InputController(&camera, &meshes[1]);
+        }
+
+        SetCallbacks();
+
+        if (inputController)
+        {
+            glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos)
+                                     {
+                InputController* inputController = static_cast<InputController*>(glfwGetWindowUserPointer(window));
+                if (inputController)
+                {
+                    inputController->MouseCallback(window, xpos, ypos);
+                } });
+            glfwSetWindowUserPointer(window, inputController);
+        }
+
         while (!glfwWindowShouldClose(window))
         {
             glm::vec3 lightPos = glm::vec3(4.0f, 4.0f, 4.0f);
@@ -114,8 +143,7 @@ namespace Render
             shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
             shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
             shader.SetFloat("material.shininess", 32.0f);
-            
-            camera.HandleKeyboardInput(window, deltaTime);
+
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
             std::cout << "It has looped" << std::endl;
             Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -125,8 +153,7 @@ namespace Render
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
-         // Wait for user input to start rendering
-
+        // Wait for user input to start rendering
     }
 
     void Renderer::Load(std::string obj_model_filepath) // Load .obj file
@@ -236,9 +263,8 @@ namespace Render
     void Renderer::Render(glm::vec3 position, glm::vec3 orientation)
     {
 
-            meshes[0].Draw(shader, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)), glm::vec3(0.0f, 3.0f, 0.0f)));
-            meshes[1].Draw(shader, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(1.0f, 1.0f, 1.0f)));
-
+        meshes[0].Draw(shader, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(0.0f, 0.0f, 0.0f)));
+        meshes[1].Draw(shader, glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(0.0f,0.0f, 0.0f)));
     }
 
     Renderer::~Renderer()
@@ -253,30 +279,4 @@ namespace Render
         }
         glfwTerminate();
     }
-
-    void mouse_callback(GLFWwindow *window, double xpos, double ypos)
-    {
-        static bool firstMouse = true;
-        static double lastX = 0.0;
-        static double lastY = 0.0;
-
-        if (firstMouse)
-        {
-            lastX = xpos;
-            lastY = ypos;
-            firstMouse = false;
-        }
-
-        float xoffset = static_cast<float>(xpos - lastX);
-        float yoffset = static_cast<float>(lastY - ypos); // reversed: y ranges bottom to top
-        lastX = xpos;
-        lastY = ypos;
-
-        xoffset *= 0.1f; // Adjust sensitivity
-        yoffset *= 0.1f; // Adjust sensitivity
-
-        // Update camera orientation based on mouse movement
-        camera.ProcessMouseRotation(window, xpos, ypos);
-    }
-
 }
