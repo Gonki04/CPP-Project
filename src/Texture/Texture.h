@@ -2,8 +2,12 @@
 #include <string>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <stb_image.h>
 #include <map>
+
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#endif
 
 struct Material {
     glm::vec3 ambient = glm::vec3(0.0f);
@@ -28,4 +32,3 @@ public:
 private:
     static void SetupTextureParameters(unsigned int textureID);
 };
-#pragma once

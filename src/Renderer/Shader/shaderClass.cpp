@@ -13,6 +13,7 @@ std::string get_file_contents(const char* filename)
 		in.close();
 		return(contents);
 	}
+	return "";
 	//throw(errno);
 }
 
@@ -100,4 +101,8 @@ void Shader::SetVec3(const std::string& name, const glm::vec3& vec) const {
 
 void Shader::SetFloat(const std::string& name, float value) const {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::SetInt(const std::string& name, int value) const {
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }

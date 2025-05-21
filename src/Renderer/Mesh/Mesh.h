@@ -4,11 +4,12 @@
 #include "../VBO.h"
 #include "../EBO.h"
 #include "../VAO.h"
+#include "../../Texture/Texture.h"
 
-struct Texture {
-	unsigned int id;
-	std::string type;
-};
+// struct Texture {
+// 	unsigned int id;
+// 	std::string type;
+// };
 
 class Mesh
 {

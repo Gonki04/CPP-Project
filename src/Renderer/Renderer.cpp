@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include <Texture.h>
+#include "../Texture/Texture.h"
 
 namespace Render
 {
@@ -214,8 +214,8 @@ namespace Render
             else if (prefix == "mtllib") // Material library
             {
                 iss >> mtlFilePath;
-            mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
-            Texture::LoadMTL(mtlFilePath, materials);
+                mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
+                Texture::LoadMTL(mtlFilePath, materials);
             }
             else if (prefix == "usemtl") {
                 iss >> currentMaterialName;

@@ -40,13 +40,25 @@ void Mesh::setupMesh() {
 void Mesh::Draw(Shader& shader, glm::mat4 model) {  //use my default shaders and setup view model projection for testing
 	shader.Activate();
 	shader.SetMat4("u_Model", model);
+	unsigned int diffuseNr = 0;
+	unsigned int specularNr = 0;
 
 	// Bind textures if any
 	for (unsigned int i = 0; i < textures.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		//glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		// Optionally set sampler uniform if needed
 		// shader.SetInt("texture" + std::to_string(i), i);
+
+		std::string number;
+		std::string name = textures[i].type;
+		if (name == "texture_diffuse")
+			number = std::to_string(diffuseNr++);
+		else if (name == "texture_specular")
+			number = std::to_string(specularNr++);
+
+			shader.SetInt((name + number).c_str(), i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	glActiveTexture(GL_TEXTURE0); // Reset active texture
 

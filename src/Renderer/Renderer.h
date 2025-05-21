@@ -13,6 +13,7 @@
 #include "Sphere.h"
 #include <tuple>
 #include <map>
+#include "../Texture/Texture.h"
 #pragma once
 
 namespace Render
