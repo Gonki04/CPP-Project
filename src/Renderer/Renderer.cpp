@@ -201,6 +201,8 @@ namespace Render
             // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
 
+            AnimateBall();
+
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
@@ -223,6 +225,7 @@ namespace Render
     {
         std::string obj_model_filepath = "resources/Assets/";
         std::string obj_model_fileextension = ".obj";
+        ballPositions.clear(); // Limpa as posições
 
         for (int i = 1; i < 16; ++i)
         {
@@ -232,6 +235,7 @@ namespace Render
             ball.name = "Ball" + std::to_string(i);
 
             poolBalls.push_back(ball);
+            ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));
         }
     }
 
@@ -257,16 +261,37 @@ namespace Render
                 if (ballIndex >= poolBalls.size())
                     return;
 
-                float x = rowZ;
-                float y = basePosition.y;
-                float z = rowStartX + col * colSpacing;
+                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f))
+                {
+                    float x = rowZ;
+                    float y = basePosition.y;
+                    float z = rowStartX + col * colSpacing;
 
-                poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+                    ballPositions[ballIndex] = glm::vec3(x, y, z);
+                }
+                else{
+                poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
+                }
                 ++ballIndex;
             }
         }
     }
 
+    void Renderer::AnimateBall()
+    {
+        static bool moving = false;
+        static float speed = 10.0f; // velocidade da bola
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            moving = true;
+        
+        // Atualiza a posição da bola 0 se estiver se movendo
+        if (moving && !ballPositions.empty())
+        {
+            ballPositions[0].x -= speed * static_cast<float>(deltaTime);
+        }
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
