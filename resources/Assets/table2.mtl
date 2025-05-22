@@ -2,12 +2,11 @@
 # www.blender.org
 
 newmtl Material.005
-Ns 64.0
-Ka 0.2 0.7 0.2
-Kd 0.2 0.7 0.2
-Ks 0.3 0.3 0.3
-Ke 0.0 0.0 0.0
-Ni 1.45
-d 1.0
-illum 1
-map_Kd PoolBalluv15.jpg
+Ns 64.000023
+Ka 1.000000 1.000000 1.000000
+Ks 0.300000 0.300000 0.300000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Table2.jpg
