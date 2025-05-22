@@ -10,10 +10,20 @@ Mesh::Mesh(Shader &shader, std::string obj_model_filepath)
 	Install();
 }
 
+
+
 void Mesh::Draw(Shader &shader, glm::mat4 model)
 { // use my default shaders and setup view model projection for testing
 	shader.SetMat4("u_Model", model);
 
+	shader.SetVec3("material.ambient", material.ambient);
+    shader.SetVec3("material.diffuse", material.diffuse);
+    shader.SetVec3("material.specular", material.specular);
+    shader.SetFloat("material.shininess", material.shininess);
+std::cout << "[" << name << "] Material ambient: " << material.ambient.x << ", " << material.ambient.y << ", " << material.ambient.z << std::endl;
+std::cout << "[" << name << "] Material diffuse: " << material.diffuse.x << ", " << material.diffuse.y << ", " << material.diffuse.z << std::endl;
+std::cout << "[" << name << "] Material specular: " << material.specular.x << ", " << material.specular.y << ", " << material.specular.z << std::endl;
+std::cout << "[" << name << "] Material shininess: " << material.shininess << std::endl;
 	// Bind textures if any
 	for (unsigned int i = 0; i < textures.size(); ++i)
 	{
@@ -124,18 +134,17 @@ void Mesh::Load(std::string obj_model_filepath)
 			mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
 			Texture::LoadMTL(mtlFilePath, materials);
 		}
-		else if (prefix == "usemtl") {
+		else if (prefix == "usemtl")
+		{
 			iss >> currentMaterialName;
-			if (materials.find(currentMaterialName) != materials.end()) {
-				const Material& mat = materials[currentMaterialName];
-				shader.SetVec3("material.ambient", mat.ambient);
-				shader.SetVec3("material.diffuse", mat.diffuse);
-				shader.SetVec3("material.specular", mat.specular);
-				shader.SetFloat("material.shininess", mat.shininess);
-				
-				if (mat.diffuseMap != 0) {
+			if (materials.find(currentMaterialName) != materials.end())
+			{
+				this->material = materials[currentMaterialName]; // Store in member variable
+
+				if (material.diffuseMap != 0)
+				{
 					Texture texture;
-					texture.id = mat.diffuseMap;
+					texture.id = material.diffuseMap;
 					texture.type = "texture_diffuse";
 					textures.push_back(texture);
 				}
@@ -147,10 +156,10 @@ void Mesh::Load(std::string obj_model_filepath)
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
-
 }
 
-glm::vec3 Mesh::GetCenter(){
+glm::vec3 Mesh::GetCenter()
+{
 	glm::vec3 center(0.0f);
 	for (const auto &vertex : vertices)
 	{
@@ -189,8 +198,8 @@ void Mesh::Render(glm::vec3 position, glm::vec3 orientation)
 
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, position);
-	transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f)); 
-	transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f)); 
-	transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f)); 
+	transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	Draw(shader, transform);
 }

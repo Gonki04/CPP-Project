@@ -33,8 +33,7 @@ namespace Render
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
-
+        // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // For debug output
 
         // Create window
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
@@ -93,8 +92,9 @@ namespace Render
     void Renderer::Display()
     {
         shader.Activate();
-        Mesh mesh_table(shader, "resources/Assets/table2.obj");
         GeneratePoolBalls();
+        Mesh mesh_table(shader, "resources/Assets/table2.obj");
+        mesh_table.name = "table";
 
         InputController *inputController = nullptr;
         glm::vec3 Tpose = mesh_table.GetCenter();
@@ -102,7 +102,6 @@ namespace Render
         camera.Orientation = glm::normalize(Tpose - camera.Position);
 
         inputController = new InputController(&camera, &mesh_table);
-
 
         if (inputController)
         {
@@ -125,13 +124,79 @@ namespace Render
             shader.SetVec3("lightPos", lightPos);
             shader.SetVec3("viewPos", camera.Position);
 
+            static bool ambientEnabled = true;
+            static bool directionalEnabled = true;
+            static bool pointEnabled = true;
+            static bool spotEnabled = true;
+            std::cout << "ambientEnabled: " << ambientEnabled << std::endl;
+            std::cout << "directionalEnabled: " << directionalEnabled << std::endl;
+            std::cout << "pointEnabled: " << pointEnabled << std::endl;
+            std::cout << "spotEnabled: " << spotEnabled << std::endl;
+
+            shader.SetInt("ambientLight.enabled", ambientEnabled ? 1 : 0);
+            shader.SetVec3("ambientLight.color", glm::vec3(0.1f, 0.1f, 0.1f)); // Soft gray ambient
+            shader.SetInt("directionalLight.enabled", directionalEnabled ? 1 : 0);
+            shader.SetVec3("directionalLight.direction", glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
+            shader.SetVec3("directionalLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+            shader.SetVec3("directionalLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+            shader.SetVec3("directionalLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+            shader.SetInt("pointLight.enabled", pointEnabled ? 1 : 0);
+            shader.SetVec3("pointLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
+            shader.SetVec3("pointLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+            shader.SetVec3("pointLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+            shader.SetVec3("pointLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+            shader.SetFloat("pointLight.kc_atenuation", 1.0f);   // constant
+            shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
+            shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
+            shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
+            glm::vec3 ballsBase = glm::vec3(0.0f, 4.0f, 20.0f);
+            float triangleHeight = 4 * (1.0f * 2.0f); // 4 rows after the base, spacing = ballRadius*2
+            glm::vec3 ballsCenter = ballsBase + glm::vec3(0.0f, 0.0f, triangleHeight / 2.0f);
+            shader.SetVec3("spotLight.position", camera.Position);
+            glm::vec3 spotDirection = glm::normalize(ballsCenter - camera.Position);
+            shader.SetVec3("spotLight.direction", spotDirection);
+            shader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+            shader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+            shader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+            shader.SetFloat("spotLight.kc_atenuation", 1.0f);
+            shader.SetFloat("spotLight.kl_atenuation", 0.09f);
+            shader.SetFloat("spotLight.kq_atenuation", 0.032f);
+            shader.SetFloat("spotLight.s_exponent", 32.0f);
+            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));      // inner cone
+            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f))); // outer cone
+
+            static int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
+
+            int state1 = glfwGetKey(window, GLFW_KEY_1);
+            int state2 = glfwGetKey(window, GLFW_KEY_2);
+            int state3 = glfwGetKey(window, GLFW_KEY_3);
+            int state4 = glfwGetKey(window, GLFW_KEY_4);
+
+            if (state1 == GLFW_PRESS && prev1 == GLFW_RELEASE)
+                ambientEnabled = !ambientEnabled;
+            if (state2 == GLFW_PRESS && prev2 == GLFW_RELEASE)
+                directionalEnabled = !directionalEnabled;
+            if (state3 == GLFW_PRESS && prev3 == GLFW_RELEASE)
+                pointEnabled = !pointEnabled;
+            if (state4 == GLFW_PRESS && prev4 == GLFW_RELEASE)
+                spotEnabled = !spotEnabled;
+
+            prev1 = state1;
+            prev2 = state2;
+            prev3 = state3;
+            prev4 = state4;
+
+            shader.SetInt("ambientLight.enabled", ambientEnabled ? 1 : 0);
+            shader.SetInt("directionalLight.enabled", directionalEnabled ? 1 : 0);
+            shader.SetInt("pointLight.enabled", pointEnabled ? 1 : 0);
+            shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
             mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             DrawPoolBalls();
-            //mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-            //mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
+            // mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            // mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
             // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
@@ -154,7 +219,6 @@ namespace Render
         glfwTerminate();
     }
 
-
     void Renderer::GeneratePoolBalls()
     {
         std::string obj_model_filepath = "resources/Assets/";
@@ -165,50 +229,49 @@ namespace Render
             std::string obj_model_filename = "Ball" + std::to_string(i) + obj_model_fileextension;
             std::string full_path = obj_model_filepath + obj_model_filename;
             Mesh ball(shader, full_path);
+            ball.name = "Ball" + std::to_string(i);
 
             poolBalls.push_back(ball);
         }
-
     }
 
-void Renderer::DrawPoolBalls()
-{
-    // Parameters for triangle layout
-    float ballRadius = 1.0f; // Adjust to your model's scale
-    float rowSpacing = ballRadius * 2.0f; // Distance between rows
-    float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
-
-    glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f); // Center of the triangle base
-
-    int ballIndex = 0;
-    for (int row = 0; row < 5; ++row)
+    void Renderer::DrawPoolBalls()
     {
-        int ballsInRow = row + 1;
-        // Center the row horizontally
-        float rowZ = basePosition.z + (row * rowSpacing);
-        float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
+        // Parameters for triangle layout
+        float ballRadius = 1.0f;                      // Adjust to your model's scale
+        float rowSpacing = ballRadius * 2.0f;         // Distance between rows
+        float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
 
-        for (int col = 0; col < ballsInRow; ++col)
+        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f); // Center of the triangle base
+
+        int ballIndex = 0;
+        for (int row = 0; row < 5; ++row)
         {
-            if (ballIndex >= poolBalls.size())
-                return;
+            int ballsInRow = row + 1;
+            // Center the row horizontally
+            float rowZ = basePosition.z + (row * rowSpacing);
+            float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
 
-            float x = rowZ;
-            float y = basePosition.y;
-            float z = rowStartX + col * colSpacing;
+            for (int col = 0; col < ballsInRow; ++col)
+            {
+                if (ballIndex >= poolBalls.size())
+                    return;
 
-            poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
-            ++ballIndex;
+                float x = rowZ;
+                float y = basePosition.y;
+                float z = rowStartX + col * colSpacing;
+
+                poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+                ++ballIndex;
+            }
         }
     }
-}
-
 
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
