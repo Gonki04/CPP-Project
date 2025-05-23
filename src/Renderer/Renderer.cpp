@@ -149,21 +149,17 @@ namespace Render
             shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
             shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
             shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
-            glm::vec3 ballsBase = glm::vec3(0.0f, 4.0f, 20.0f);
-            float triangleHeight = 4 * (1.0f * 2.0f); // 4 rows after the base, spacing = ballRadius*2
-            glm::vec3 ballsCenter = ballsBase + glm::vec3(0.0f, 0.0f, triangleHeight / 2.0f);
-            shader.SetVec3("spotLight.position", camera.Position);
-            glm::vec3 spotDirection = glm::normalize(ballsCenter - camera.Position);
-            shader.SetVec3("spotLight.direction", spotDirection);
-            shader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-            shader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetFloat("spotLight.kc_atenuation", 1.0f);
-            shader.SetFloat("spotLight.kl_atenuation", 0.09f);
-            shader.SetFloat("spotLight.kq_atenuation", 0.032f);
+            shader.SetVec3("spotLight.position", glm::vec3(20.0f, 30.0f, 0.0f)); // Above the balls
+            shader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f)); // Pointing straight down
+            shader.SetVec3("spotLight.ambient", glm::vec3(20.5f, 20.5f, 20.5f));
+            shader.SetVec3("spotLight.diffuse", glm::vec3(20.0f, 20.0f, 20.0f));
+            shader.SetVec3("spotLight.specular", glm::vec3(20.0f, 20.0f, 20.0f));
+            shader.SetFloat("spotLight.kc_atenuation", 0.01f);
+            shader.SetFloat("spotLight.kl_atenuation", 0.05f);
+            shader.SetFloat("spotLight.kq_atenuation", 0.01f);
             shader.SetFloat("spotLight.s_exponent", 32.0f);
-            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));      // inner cone
-            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f))); // outer cone
+            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(0.5f)));       // inner cone
+            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(30.5f))); // outer cone
 
             static int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
 
@@ -270,8 +266,9 @@ namespace Render
                     poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
-                else{
-                poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
+                else
+                {
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
                 }
                 ++ballIndex;
             }
@@ -285,7 +282,7 @@ namespace Render
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
             moving = true;
-        
+
         // Atualiza a posição da bola 0 se estiver se movendo
         if (moving && !ballPositions.empty())
         {
