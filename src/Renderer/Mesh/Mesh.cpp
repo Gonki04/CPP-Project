@@ -10,8 +10,6 @@ Mesh::Mesh(Shader &shader, std::string obj_model_filepath)
 	Install();
 }
 
-
-
 void Mesh::Draw(Shader &shader, glm::mat4 model)
 { // use my default shaders and setup view model projection for testing
 	shader.SetMat4("u_Model", model);

@@ -18,15 +18,15 @@ public:
     // Luzes
     bool lightKeys[4] = {false, false, false, false};
     bool spacePressed = false;
+    float modelYaw = 0.0f;
+    float modelPitch = 0.0f;
 
 private:
     Camera* camera;
     Mesh* table_Mesh;
     glm::vec3* target; // Centro da mesa
 
-    float yaw;
-    float pitch;
+    
     float lastX, lastY;
     bool firstMouse;
-    float distanceToTarget; // Centro da mesa
 };

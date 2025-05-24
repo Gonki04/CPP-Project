@@ -5,12 +5,11 @@ InputController::InputController(Camera *camera, Mesh *table_Mesh)
     : camera(camera), table_Mesh(table_Mesh)
 {
     target = new glm::vec3(table_Mesh->GetCenter());
-    yaw = -90.0f;
-    pitch = 0.0f;
+    modelYaw = -90.0f;
+    modelPitch = 0.0f;
     lastX = 400.0f;
     lastY = 300.0f;
     firstMouse = true;
-    distanceToTarget = glm::length(camera->Position - *target);
 }
 
 void InputController::SetCallbacks(GLFWwindow* window)
@@ -62,23 +61,16 @@ void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypo
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    yaw += xoffset;
-    pitch += yoffset;
+    modelYaw += xoffset;
+    modelPitch += yoffset;
 
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
+    if (modelPitch > 89.0f)
+        modelPitch = 89.0f;
+    if (modelPitch < -89.0f)
+        modelPitch = -89.0f;
 
-    // Calcula nova posição da câmera em torno do centro da mesa
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction = glm::normalize(direction);
-
-    camera->Position = *target - direction * distanceToTarget;
-    camera->Orientation = glm::normalize(*target - camera->Position);
+    std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
+    std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
 }
 
 void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)

@@ -45,9 +45,14 @@ namespace Render
         std::vector<Texture> textures;
         std::vector<Mesh> poolBalls;
         std::vector<glm::vec3> ballPositions;
+        std::vector<glm::vec3> ballOrientations;
         void DrawPoolBalls();
         void GeneratePoolBalls();
         void AnimateBall();
+        void DetectBallsCollisions();
+        void BallsRotation();
+        void CalculateTableBorders();
+
 
         void SetupOpenGL();
         void PrintSystemInfo();
