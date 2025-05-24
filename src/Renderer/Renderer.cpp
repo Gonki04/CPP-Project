@@ -2,6 +2,9 @@
 
 namespace Render
 {
+    static bool onAnimationEvent[16] = {false};
+    static double speed[16] = {0.0f};
+
     Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
@@ -202,6 +205,7 @@ namespace Render
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
 
             AnimateBall();
+            CalculateBallsDistance();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -270,8 +274,9 @@ namespace Render
                     poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
-                else{
-                poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
+                else
+                {
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
                 }
                 ++ballIndex;
             }
@@ -280,17 +285,53 @@ namespace Render
 
     void Renderer::AnimateBall()
     {
-        static bool moving = false;
-        static float speed = 10.0f; // velocidade da bola
+        onAnimationEvent[0] = true;
+    
+
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        {
+            ballPositions[1] = glm::vec3(-20.0f, 4.0f, 0.0f); // Reset position of ball 1
+            onAnimationEvent[1] = true;
+        }
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            moving = true;
-        
-        // Atualiza a posição da bola 0 se estiver se movendo
-        if (moving && !ballPositions.empty())
         {
-            ballPositions[0].x -= speed * static_cast<float>(deltaTime);
+            
+            speed[0] = 10.0f;
         }
+
+        // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            if (onAnimationEvent[i])
+            {
+                ballPositions[i].x -= speed[i] * static_cast<float>(deltaTime);
+            }
+        }
+    }
+
+    void Renderer::CalculateBallsDistance()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            for (size_t j = i + 1; j < ballPositions.size(); ++j)
+            {
+                float distance = glm::distance(ballPositions[i], ballPositions[j]);
+                if (onAnimationEvent[i])
+                {
+                    if (distance < 2.0f)
+                    {
+                        std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
+                        speed[j] = speed[i] * 0.8f;
+                        speed[i] = 0.0f;
+                    }
+                }
+            }
+        }
+    }
+
+    void Renderer::CalculateTableBorders(){
+
     }
 }
 

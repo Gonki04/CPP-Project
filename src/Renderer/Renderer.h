@@ -47,6 +47,8 @@ namespace Render
         void DrawPoolBalls();
         void GeneratePoolBalls();
         void AnimateBall();
+        void CalculateBallsDistance();
+        void CalculateTableBorders();
 
         void SetupOpenGL();
         void PrintSystemInfo();
