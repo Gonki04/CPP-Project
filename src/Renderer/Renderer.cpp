@@ -205,7 +205,9 @@ namespace Render
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
 
             AnimateBall();
-            CalculateBallsDistance();
+            DetectBallsCollisions();
+            CalculateTableBorders();
+            BallsRotation();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -240,6 +242,7 @@ namespace Render
 
             poolBalls.push_back(ball);
             ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));
+            ballOrientations.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
         }
     }
 
@@ -271,12 +274,12 @@ namespace Render
                     float y = basePosition.y;
                     float z = rowStartX + col * colSpacing;
 
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
                 else
                 {
-                    poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex]);
                 }
                 ++ballIndex;
             }
@@ -286,7 +289,6 @@ namespace Render
     void Renderer::AnimateBall()
     {
         onAnimationEvent[0] = true;
-    
 
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         {
@@ -296,7 +298,7 @@ namespace Render
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            
+
             speed[0] = 10.0f;
         }
 
@@ -310,7 +312,7 @@ namespace Render
         }
     }
 
-    void Renderer::CalculateBallsDistance()
+    void Renderer::DetectBallsCollisions()
     {
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
@@ -330,8 +332,39 @@ namespace Render
         }
     }
 
-    void Renderer::CalculateTableBorders(){
+    void Renderer::CalculateTableBorders()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            if (onAnimationEvent[i])
+            {
+                if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
+                {
+                    std::cout << "Ball " << i << " is out of bounds!" << std::endl;
+                    speed[i] = 0.0f;
+                }
+            }
+        }
+    }
 
+    void Renderer::BallsRotation()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            static float rotationAngle = 0.0f;
+
+            if (onAnimationEvent[i])
+            {
+                if (speed[i] != 0.0f)
+                { 
+                    // Incrementa o ângulo de rotação com base na velocidade da bola
+                    rotationAngle += speed[i];
+
+                    // Define a orientação da bola com base no ângulo de rotação
+                    ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle);
+                }
+            }
+        }
     }
 }
 
