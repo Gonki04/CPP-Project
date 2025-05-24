@@ -104,7 +104,7 @@ vec4 IDirectionalLight() {
 
     vec4 iambient = vec4(material.ambient * directionalLight.ambient, 1.0f);
 
-    vec3 L = -(directionalLight.direction);
+    vec3 L = normalize(-directionalLight.direction);
     vec3 N = normalize(Normal.xyz);
 
     float NdotL = max(dot(N, L), 0.0f);
@@ -112,12 +112,11 @@ vec4 IDirectionalLight() {
     vec4 idiffuse = vec4(material.diffuse * directionalLight.diffuse, 1.0f) * NdotL;
 
     vec3 V = normalize(viewPos - FragPos);
+    vec3 H = normalize(L + V);
 
-    vec3 R = reflect(-L, N);
+    float HdotN = max(dot(H, N), 0.0f);
 
-    float RdotV = max(dot(R, V), 0.0f);
-
-    vec4 ispecular = pow(RdotV, material.shininess) * vec4(directionalLight.specular * material.specular, 1.0f);
+    vec4 ispecular = pow(HdotN, material.shininess) * NdotL * vec4(directionalLight.specular * material.specular, 1.0f);
 
     return iambient + idiffuse + ispecular;
 }
@@ -136,12 +135,11 @@ vec4 IPointLight() {
     vec4 idiffuse = vec4(material.diffuse * pointLight.diffuse, 1.0f) * NdotL;
 
     vec3 V = normalize(viewPos - FragPos);
+    vec3 H = normalize(L + V);
 
-    vec3 R = reflect(-L, N);
+    float HdotN = max(dot(H, N), 0.0f);
 
-    float RdotV = max(dot(R, V), 0.0f);
-
-    vec4 ispecular = pow(RdotV, material.shininess) * vec4(pointLight.specular * material.specular, 1.0f);
+    vec4 ispecular = pow(HdotN, material.shininess) * NdotL * vec4(pointLight.specular * material.specular, 1.0f);
 
     float distance = length(pointLight.position - FragPos);
     float attenuation = 1.0f / (pointLight.kc_atenuation + pointLight.kl_atenuation * distance + pointLight.kq_atenuation * (distance * distance));

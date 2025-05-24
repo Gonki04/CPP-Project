@@ -28,6 +28,7 @@ namespace Render
         double deltaTime;
         bool Init();
         void Display();
+        void HandleBallCollisions();
 
     private:
         std::map<std::string, Material> materials;

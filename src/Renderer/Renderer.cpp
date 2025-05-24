@@ -142,7 +142,7 @@ namespace Render
             shader.SetVec3("directionalLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.SetInt("pointLight.enabled", pointEnabled ? 1 : 0);
             shader.SetVec3("pointLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
-            shader.SetVec3("pointLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+            shader.SetVec3("pointLight.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.SetVec3("pointLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
             shader.SetVec3("pointLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.SetFloat("pointLight.kc_atenuation", 1.0f);   // constant
