@@ -2,6 +2,9 @@
 
 namespace Render
 {
+    static bool onAnimationEvent[16] = {false};
+    static double speed[16] = {0.0f};
+
     Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
@@ -145,21 +148,17 @@ namespace Render
             shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
             shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
             shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
-            glm::vec3 ballsBase = glm::vec3(0.0f, 4.0f, 20.0f);
-            float triangleHeight = 4 * (1.0f * 2.0f); // 4 rows after the base, spacing = ballRadius*2
-            glm::vec3 ballsCenter = ballsBase + glm::vec3(0.0f, 0.0f, triangleHeight / 2.0f);
-            shader.SetVec3("spotLight.position", camera.Position);
-            glm::vec3 spotDirection = glm::normalize(ballsCenter - camera.Position);
-            shader.SetVec3("spotLight.direction", spotDirection);
-            shader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-            shader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetFloat("spotLight.kc_atenuation", 1.0f);
-            shader.SetFloat("spotLight.kl_atenuation", 0.09f);
-            shader.SetFloat("spotLight.kq_atenuation", 0.032f);
+            shader.SetVec3("spotLight.position", glm::vec3(20.0f, 30.0f, 0.0f)); // Above the balls
+            shader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f)); // Pointing straight down
+            shader.SetVec3("spotLight.ambient", glm::vec3(20.5f, 20.5f, 20.5f));
+            shader.SetVec3("spotLight.diffuse", glm::vec3(20.0f, 20.0f, 20.0f));
+            shader.SetVec3("spotLight.specular", glm::vec3(20.0f, 20.0f, 20.0f));
+            shader.SetFloat("spotLight.kc_atenuation", 0.01f);
+            shader.SetFloat("spotLight.kl_atenuation", 0.05f);
+            shader.SetFloat("spotLight.kq_atenuation", 0.01f);
             shader.SetFloat("spotLight.s_exponent", 32.0f);
-            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));      // inner cone
-            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f))); // outer cone
+            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(0.5f)));       // inner cone
+            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(30.5f))); // outer cone
 
             static int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
 
@@ -198,6 +197,9 @@ namespace Render
             // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
 
             AnimateBall();
+            DetectBallsCollisions();
+            CalculateTableBorders();
+            BallsRotation();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -232,6 +234,7 @@ namespace Render
 
             poolBalls.push_back(ball);
             ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));
+            ballOrientations.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
         }
     }
 
@@ -263,11 +266,12 @@ namespace Render
                     float y = basePosition.y;
                     float z = rowStartX + col * colSpacing;
 
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), glm::vec3(0.0f));
+                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
-                else{
-                poolBalls[ballIndex].Render(ballPositions[ballIndex], glm::vec3(0.0f));
+                else
+                {
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex]);
                 }
                 ++ballIndex;
             }
@@ -276,16 +280,82 @@ namespace Render
 
     void Renderer::AnimateBall()
     {
-        static bool moving = false;
-        static float speed = 10.0f; // velocidade da bola
+        onAnimationEvent[0] = true;
+
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        {
+            ballPositions[1] = glm::vec3(-20.0f, 4.0f, 0.0f); // Reset position of ball 1
+            onAnimationEvent[1] = true;
+        }
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            moving = true;
-        
-        // Atualiza a posição da bola 0 se estiver se movendo
-        if (moving && !ballPositions.empty())
         {
-            ballPositions[0].x -= speed * static_cast<float>(deltaTime);
+
+            speed[0] = 10.0f;
+        }
+
+        // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            if (onAnimationEvent[i])
+            {
+                ballPositions[i].x -= speed[i] * static_cast<float>(deltaTime);
+            }
+        }
+    }
+
+    void Renderer::DetectBallsCollisions()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            for (size_t j = i + 1; j < ballPositions.size(); ++j)
+            {
+                float distance = glm::distance(ballPositions[i], ballPositions[j]);
+                if (onAnimationEvent[i])
+                {
+                    if (distance < 2.0f)
+                    {
+                        std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
+                        speed[j] = speed[i] * 0.8f;
+                        speed[i] = 0.0f;
+                    }
+                }
+            }
+        }
+    }
+
+    void Renderer::CalculateTableBorders()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            if (onAnimationEvent[i])
+            {
+                if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
+                {
+                    std::cout << "Ball " << i << " is out of bounds!" << std::endl;
+                    speed[i] = 0.0f;
+                }
+            }
+        }
+    }
+
+    void Renderer::BallsRotation()
+    {
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            static float rotationAngle = 0.0f;
+
+            if (onAnimationEvent[i])
+            {
+                if (speed[i] != 0.0f)
+                { 
+                    // Incrementa o ângulo de rotação com base na velocidade da bola
+                    rotationAngle += speed[i];
+
+                    // Define a orientação da bola com base no ângulo de rotação
+                    ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle);
+                }
+            }
         }
     }
 }
