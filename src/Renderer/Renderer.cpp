@@ -104,7 +104,8 @@ namespace Render
         camera.Position = Tpose + glm::vec3(0.0f, 0.0f, 70.0f);
         camera.Orientation = glm::normalize(Tpose - camera.Position);
 
-        inputController = new InputController(&camera, &mesh_table);
+        inputController = new InputController(&camera);
+        inputController->SetTableMesh(&mesh_table);
 
         if (inputController)
         {

@@ -1,15 +1,24 @@
 #include "InputController.h"
 #include <iostream>
 
-InputController::InputController(Camera *camera, Mesh *table_Mesh)
-    : camera(camera), table_Mesh(table_Mesh)
+InputController::InputController(Camera *camera)
+    : camera(camera)
 {
-    target = new glm::vec3(table_Mesh->GetCenter());
     modelYaw = -90.0f;
     modelPitch = 0.0f;
     lastX = 400.0f;
     lastY = 300.0f;
     firstMouse = true;
+}
+
+void InputController::SetTableMesh(Mesh* table_Mesh)
+{
+    this->table_Mesh = table_Mesh;
+    if (target) delete target;
+    if (table_Mesh)
+        target = new glm::vec3(table_Mesh->GetCenter());
+    else
+        target = nullptr;
 }
 
 void InputController::SetCallbacks(GLFWwindow* window)
@@ -26,7 +35,6 @@ void InputController::SetCallbacks(GLFWwindow* window)
         if (controller) controller->ScrollCallback(win, xoffset, yoffset);
     });
 
-    // Se quiser adicionar KeyCallback:
     glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->KeyCallback(win, key, scancode, action, mods);

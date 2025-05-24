@@ -7,13 +7,14 @@
 
 class InputController {
 public:
-    InputController(Camera* camera, Mesh* table_Mesh);
+    InputController(Camera* camera);
     ~InputController();
 
     void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
     void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void CursorCallback(GLFWwindow* window, double xpos, double ypos);
     void SetCallbacks(GLFWwindow* window);
+    void SetTableMesh(Mesh* table_Mesh);
 
     // Luzes
     bool lightKeys[4] = {false, false, false, false};
@@ -23,8 +24,8 @@ public:
 
 private:
     Camera* camera;
-    Mesh* table_Mesh;
-    glm::vec3* target; // Centro da mesa
+    Mesh* table_Mesh = nullptr; // Mesh da mesa
+    glm::vec3* target = nullptr; // Centro da mesa
 
     
     float lastX, lastY;
