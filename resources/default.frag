@@ -71,7 +71,7 @@ uniform SpotLight spotLight;
 uniform sampler2D texture1;
 
 uniform vec3 viewPos;
-uniform vec3 lightPos; 
+
 
 
 out vec4 FragColor;
@@ -163,21 +163,23 @@ vec4 ISpotLight() {
     vec4 idiffuse = vec4(material.diffuse * spotLight.diffuse, 1.0f) * NdotL;
 
     vec3 V = normalize(viewPos - FragPos);
+    vec3 H = normalize(L + V);
 
-    vec3 R = reflect(-L, N);
+    float HdotN = max(dot(H, N), 0.0f); 
 
-    float RdotV = max(dot(R, V), 0.0f);
-
-    vec4 ispecular = pow(RdotV, material.shininess) * vec4(spotLight.specular * material.specular, 1.0f);
+    vec4 ispecular = pow(HdotN, material.shininess) * vec4(spotLight.specular * material.specular, 1.0f);
 
     float distance = length(spotLight.position - FragPos);
-    float attenuation = 1.0f / (spotLight.kc_atenuation + spotLight.kl_atenuation * distance + spotLight.kq_atenuation * (distance * distance));
+    float DdotV = dot(L, normalize(-spotLight.direction));
 
-    float theta = dot(L, normalize(-spotLight.direction));
-    float epsilon = dot(normalize(spotLight.direction), normalize(spotLight.position - FragPos));
-    float intensity = clamp((theta - spotLight.cutOff) / (spotLight.outerCutOff - spotLight.cutOff), 0.0f, 1.0f);
-    
-    return (iambient + idiffuse + ispecular) * attenuation * intensity;
+    float SE = clamp((DdotV - spotLight.outerCutOff) / (spotLight.cutOff - spotLight.outerCutOff), 0.0f, 1.0f);
+
+    float attenuation = 0.0f;
+    if (DdotV > spotLight.outerCutOff) {
+        attenuation = (1.0f * pow(DdotV, spotLight.s_exponent)) / 
+            (spotLight.kc_atenuation + spotLight.kl_atenuation * distance + spotLight.kq_atenuation * pow(distance, 2.0f));
+    }
+
+    return (iambient + idiffuse + ispecular) * attenuation * SE;
 }
-
 
