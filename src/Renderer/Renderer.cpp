@@ -128,10 +128,6 @@ namespace Render
             static bool directionalEnabled = true;
             static bool pointEnabled = true;
             static bool spotEnabled = true;
-            std::cout << "ambientEnabled: " << ambientEnabled << std::endl;
-            std::cout << "directionalEnabled: " << directionalEnabled << std::endl;
-            std::cout << "pointEnabled: " << pointEnabled << std::endl;
-            std::cout << "spotEnabled: " << spotEnabled << std::endl;
 
             shader.SetInt("ambientLight.enabled", ambientEnabled ? 1 : 0);
             shader.SetVec3("ambientLight.color", glm::vec3(0.1f, 0.1f, 0.1f)); // Soft gray ambient
@@ -193,7 +189,7 @@ namespace Render
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
-            mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+            mesh_table.Render(glm::vec3(0.0f), glm::vec3(inputController->modelPitch, inputController->modelYaw, 0.0f));
             DrawPoolBalls();
             // mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
             // mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
@@ -246,7 +242,7 @@ namespace Render
         float rowSpacing = ballRadius * 2.0f;         // Distance between rows
         float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
 
-        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f); // Center of the triangle base
+        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f) ; // Center of the triangle base
 
         int ballIndex = 0;
         for (int row = 0; row < 5; ++row)

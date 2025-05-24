@@ -44,6 +44,7 @@ namespace Render
         std::vector<Texture> textures;
         std::vector<Mesh> poolBalls;
         std::vector<glm::vec3> ballPositions;
+        InputController *inputController = nullptr;
         void DrawPoolBalls();
         void GeneratePoolBalls();
         void AnimateBall();

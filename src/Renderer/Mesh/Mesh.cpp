@@ -10,20 +10,14 @@ Mesh::Mesh(Shader &shader, std::string obj_model_filepath)
 	Install();
 }
 
-
-
 void Mesh::Draw(Shader &shader, glm::mat4 model)
 { // use my default shaders and setup view model projection for testing
 	shader.SetMat4("u_Model", model);
 
 	shader.SetVec3("material.ambient", material.ambient);
-    shader.SetVec3("material.diffuse", material.diffuse);
-    shader.SetVec3("material.specular", material.specular);
-    shader.SetFloat("material.shininess", material.shininess);
-std::cout << "[" << name << "] Material ambient: " << material.ambient.x << ", " << material.ambient.y << ", " << material.ambient.z << std::endl;
-std::cout << "[" << name << "] Material diffuse: " << material.diffuse.x << ", " << material.diffuse.y << ", " << material.diffuse.z << std::endl;
-std::cout << "[" << name << "] Material specular: " << material.specular.x << ", " << material.specular.y << ", " << material.specular.z << std::endl;
-std::cout << "[" << name << "] Material shininess: " << material.shininess << std::endl;
+	shader.SetVec3("material.diffuse", material.diffuse);
+	shader.SetVec3("material.specular", material.specular);
+	shader.SetFloat("material.shininess", material.shininess);
 	// Bind textures if any
 	for (unsigned int i = 0; i < textures.size(); ++i)
 	{
