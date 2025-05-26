@@ -11,34 +11,35 @@ InputController::InputController(Camera *camera)
     firstMouse = true;
 }
 
-void InputController::SetTableMesh(Mesh* table_Mesh)
+void InputController::SetTableMesh(Mesh *table_Mesh)
 {
     this->table_Mesh = table_Mesh;
-    if (target) delete target;
+    if (target)
+        delete target;
     if (table_Mesh)
         target = new glm::vec3(table_Mesh->GetCenter());
     else
         target = nullptr;
 }
 
-void InputController::SetCallbacks(GLFWwindow* window)
+void InputController::SetCallbacks(GLFWwindow *window)
 {
     glfwSetWindowUserPointer(window, this);
 
-    glfwSetCursorPosCallback(window, [](GLFWwindow* win, double xpos, double ypos) {
+    glfwSetCursorPosCallback(window, [](GLFWwindow *win, double xpos, double ypos)
+                             {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
-        if (controller) controller->CursorCallback(win, xpos, ypos);
-    });
+        if (controller) controller->CursorCallback(win, xpos, ypos); });
 
-    glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
+    glfwSetScrollCallback(window, [](GLFWwindow *win, double xoffset, double yoffset)
+                          {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
-        if (controller) controller->ScrollCallback(win, xoffset, yoffset);
-    });
+        if (controller) controller->ScrollCallback(win, xoffset, yoffset); });
 
-    glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(window, [](GLFWwindow *win, int key, int scancode, int action, int mods)
+                       {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
-        if (controller) controller->KeyCallback(win, key, scancode, action, mods);
-    });
+        if (controller) controller->KeyCallback(win, key, scancode, action, mods); });
 }
 
 void InputController::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
@@ -84,25 +85,51 @@ void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypo
 void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_1)
     {
-        
+        if (action == GLFW_PRESS && prev1 == GLFW_RELEASE)
+        {
+            ambientEnabled = !ambientEnabled;
+        }
+        prev1 = action;
     }
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-    {
 
-    }
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_2)
     {
-
+        if (action == GLFW_PRESS && prev2 == GLFW_RELEASE)
+        {
+            directionalEnabled = !directionalEnabled;
+        }
+        prev2 = action;
     }
-    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+
+    if (key == GLFW_KEY_3)
     {
-
+        if (action == GLFW_PRESS && prev3 == GLFW_RELEASE)
+        {
+            pointEnabled = !pointEnabled;
+        }
+        prev3 = action;
     }
+
+    if (key == GLFW_KEY_4)
+    {
+        if (action == GLFW_PRESS && prev4 == GLFW_RELEASE)
+        {
+            spotEnabled = !spotEnabled;
+        }
+        prev4 = action;
+    }
+
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        // define a posiçao da bola 1 para uma nova posiçao
+        balls->ResetBall(1, glm::vec3(-20.0f, 4.0f, 0.0f));
+    }
+
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        /* code */
+        // define o speed da bola 0 para 10.0f
+        balls->SetBallSpeed(0, 10.0f);
     }
-    
 }

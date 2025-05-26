@@ -71,10 +71,23 @@ void Balls::DrawPoolBalls()
     }
 }
 
+void Balls::ResetBall(int index, const glm::vec3& pos) {
+    if (index >= 0 && index < ballPositions.size()) {
+        ballPositions[index] = pos;
+        onAnimationEvent[index] = true;
+    }
+}
+
+void Balls::SetBallSpeed(int index, double newSpeed) {
+    if (index >= 0 && index < 16) {
+        speed[index] = newSpeed;
+    }
+}
+
 void Balls::AnimateBall(GLFWwindow *window, double deltaTime)
 {
     onAnimationEvent[0] = true;
-
+/*
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
     {
         ballPositions[1] = glm::vec3(-20.0f, 4.0f, 0.0f); // Reset position of ball 1
@@ -83,10 +96,9 @@ void Balls::AnimateBall(GLFWwindow *window, double deltaTime)
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-
         speed[0] = 10.0f;
     }
-
+*/
     // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
     for (size_t i = 0; i < ballPositions.size(); ++i)
     {
@@ -127,7 +139,7 @@ void Balls::CalculateTableBorders()
             {
                 std::cout << "Ball " << i << " is out of bounds!" << std::endl;
                 speed[i] = 0.0f;
-                onAnimationEvent[i] = false; // Stop the ball if it goes out of bounds
+                onAnimationEvent[i] = false;
             }
         }
     }
@@ -143,10 +155,8 @@ void Balls::BallsRotation()
         {
             if (speed[i] != 0.0f)
             {
-                // Incrementa o ângulo de rotação com base na velocidade da bola
                 rotationAngle += speed[i];
-
-                // Define a orientação da bola com base no ângulo de rotação
+               
                 ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle);
             }
         }

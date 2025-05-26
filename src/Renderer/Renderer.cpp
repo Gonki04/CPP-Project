@@ -92,8 +92,8 @@ namespace Render
     void Renderer::Display()
     {
         shader.Activate();
-        Balls *BallsAnimation = new Balls(shader); 
-       
+        Balls *BallsAnimation = new Balls(shader);
+
         Mesh mesh_table(shader, "resources/Assets/table2.obj");
         mesh_table.name = "table";
 
@@ -126,19 +126,14 @@ namespace Render
             shader.SetVec3("lightPos", lightPos);
             shader.SetVec3("viewPos", camera.Position);
 
-            static bool ambientEnabled = true;
-            static bool directionalEnabled = true;
-            static bool pointEnabled = true;
-            static bool spotEnabled = true;
-
-            shader.SetInt("ambientLight.enabled", ambientEnabled ? 1 : 0);
+            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
             shader.SetVec3("ambientLight.color", glm::vec3(0.1f, 0.1f, 0.1f)); // Soft gray ambient
-            shader.SetInt("directionalLight.enabled", directionalEnabled ? 1 : 0);
+            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
             shader.SetVec3("directionalLight.direction", glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
             shader.SetVec3("directionalLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
             shader.SetVec3("directionalLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
             shader.SetVec3("directionalLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetInt("pointLight.enabled", pointEnabled ? 1 : 0);
+            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
             shader.SetVec3("pointLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
             shader.SetVec3("pointLight.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.SetVec3("pointLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -146,7 +141,7 @@ namespace Render
             shader.SetFloat("pointLight.kc_atenuation", 1.0f);   // constant
             shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
             shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
-            shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
+            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
             shader.SetVec3("spotLight.position", glm::vec3(20.0f, 30.0f, 0.0f)); // Above the balls
             shader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f)); // Pointing straight down
             shader.SetVec3("spotLight.ambient", glm::vec3(20.5f, 20.5f, 20.5f));
@@ -159,36 +154,16 @@ namespace Render
             shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(0.5f)));       // inner cone
             shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(30.5f))); // outer cone
 
-            static int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
-
-            int state1 = glfwGetKey(window, GLFW_KEY_1);
-            int state2 = glfwGetKey(window, GLFW_KEY_2);
-            int state3 = glfwGetKey(window, GLFW_KEY_3);
-            int state4 = glfwGetKey(window, GLFW_KEY_4);
-
-            if (state1 == GLFW_PRESS && prev1 == GLFW_RELEASE)
-                ambientEnabled = !ambientEnabled;
-            if (state2 == GLFW_PRESS && prev2 == GLFW_RELEASE)
-                directionalEnabled = !directionalEnabled;
-            if (state3 == GLFW_PRESS && prev3 == GLFW_RELEASE)
-                pointEnabled = !pointEnabled;
-            if (state4 == GLFW_PRESS && prev4 == GLFW_RELEASE)
-                spotEnabled = !spotEnabled;
-
-            prev1 = state1;
-            prev2 = state2;
-            prev3 = state3;
-            prev4 = state4;
-
-            shader.SetInt("ambientLight.enabled", ambientEnabled ? 1 : 0);
-            shader.SetInt("directionalLight.enabled", directionalEnabled ? 1 : 0);
-            shader.SetInt("pointLight.enabled", pointEnabled ? 1 : 0);
-            shader.SetInt("spotLight.enabled", spotEnabled ? 1 : 0);
+            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
+            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
+            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
+            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
             mesh_table.Render(glm::vec3(0.0f), glm::vec3(inputController->modelPitch, inputController->modelYaw, 0.0f));
 
+            inputController->SetBalls(BallsAnimation);
             BallsAnimation->BallsControl(window, deltaTime);
 
             glfwSwapBuffers(window);

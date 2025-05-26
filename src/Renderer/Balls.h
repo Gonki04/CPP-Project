@@ -15,13 +15,14 @@ public:
     }
 
     void BallsControl(GLFWwindow *window, double deltaTime);
+    void ResetBall(int index, const glm::vec3 &pos);
+    void SetBallSpeed(int index, double newSpeed);
 
 private:
     Shader &shader;
     std::vector<Mesh> poolBalls;
     std::vector<glm::vec3> ballPositions;
     std::vector<glm::vec3> ballOrientations;
-    
 
     void GeneratePoolBalls(Shader &shader);
     void DrawPoolBalls();
