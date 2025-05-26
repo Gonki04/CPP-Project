@@ -2,9 +2,6 @@
 
 namespace Render
 {
-    static bool onAnimationEvent[16] = {false};
-    static double speed[16] = {0.0f};
-
     Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
@@ -95,7 +92,8 @@ namespace Render
     void Renderer::Display()
     {
         shader.Activate();
-        GeneratePoolBalls();
+        Balls *BallsAnimation = new Balls(shader); 
+       
         Mesh mesh_table(shader, "resources/Assets/table2.obj");
         mesh_table.name = "table";
 
@@ -190,17 +188,8 @@ namespace Render
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
             mesh_table.Render(glm::vec3(0.0f), glm::vec3(inputController->modelPitch, inputController->modelYaw, 0.0f));
-            DrawPoolBalls();
-            // mesh_table.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-            // mesh_ball1.Render(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
 
-            // table_Mesh.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-            // drawMinimap(*table_Mesh, *sphere_Mesh, shader, width, height);
-
-            AnimateBall();
-            DetectBallsCollisions();
-            CalculateTableBorders();
-            BallsRotation();
+            BallsAnimation->BallsControl(window, deltaTime);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -219,148 +208,7 @@ namespace Render
         }
         glfwTerminate();
     }
-
-    void Renderer::GeneratePoolBalls()
-    {
-        std::string obj_model_filepath = "resources/Assets/";
-        std::string obj_model_fileextension = ".obj";
-        ballPositions.clear(); // Limpa as posições
-
-        for (int i = 1; i < 16; ++i)
-        {
-            std::string obj_model_filename = "Ball" + std::to_string(i) + obj_model_fileextension;
-            std::string full_path = obj_model_filepath + obj_model_filename;
-            Mesh ball(shader, full_path);
-            ball.name = "Ball" + std::to_string(i);
-
-            poolBalls.push_back(ball);
-            ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));
-            ballOrientations.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-        }
-    }
-
-    void Renderer::DrawPoolBalls()
-    {
-        // Parameters for triangle layout
-        float ballRadius = 1.0f;                      // Adjust to your model's scale
-        float rowSpacing = ballRadius * 2.0f;         // Distance between rows
-        float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
-
-        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f) ; // Center of the triangle base
-
-        int ballIndex = 0;
-        for (int row = 0; row < 5; ++row)
-        {
-            int ballsInRow = row + 1;
-            // Center the row horizontally
-            float rowZ = basePosition.z + (row * rowSpacing);
-            float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
-
-            for (int col = 0; col < ballsInRow; ++col)
-            {
-                if (ballIndex >= poolBalls.size())
-                    return;
-
-                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f))
-                {
-                    float x = rowZ;
-                    float y = basePosition.y;
-                    float z = rowStartX + col * colSpacing;
-
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
-                    ballPositions[ballIndex] = glm::vec3(x, y, z);
-                }
-                else
-                {
-                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex]);
-                }
-                ++ballIndex;
-            }
-        }
-    }
-
-    void Renderer::AnimateBall()
-    {
-        onAnimationEvent[0] = true;
-
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        {
-            ballPositions[1] = glm::vec3(-20.0f, 4.0f, 0.0f); // Reset position of ball 1
-            onAnimationEvent[1] = true;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        {
-
-            speed[0] = 10.0f;
-        }
-
-        // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
-        for (size_t i = 0; i < ballPositions.size(); ++i)
-        {
-            if (onAnimationEvent[i])
-            {
-                ballPositions[i].x -= speed[i] * static_cast<float>(deltaTime);
-            }
-        }
-    }
-
-    void Renderer::DetectBallsCollisions()
-    {
-        for (size_t i = 0; i < ballPositions.size(); ++i)
-        {
-            for (size_t j = i + 1; j < ballPositions.size(); ++j)
-            {
-                float distance = glm::distance(ballPositions[i], ballPositions[j]);
-                if (onAnimationEvent[i])
-                {
-                    if (distance < 2.0f)
-                    {
-                        std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
-                        speed[j] = speed[i] * 0.8f;
-                        speed[i] = 0.0f;
-                    }
-                }
-            }
-        }
-    }
-
-    void Renderer::CalculateTableBorders()
-    {
-        for (size_t i = 0; i < ballPositions.size(); ++i)
-        {
-            if (onAnimationEvent[i])
-            {
-                if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
-                {
-                    std::cout << "Ball " << i << " is out of bounds!" << std::endl;
-                    speed[i] = 0.0f;
-                }
-            }
-        }
-    }
-
-    void Renderer::BallsRotation()
-    {
-        for (size_t i = 0; i < ballPositions.size(); ++i)
-        {
-            static float rotationAngle = 0.0f;
-
-            if (onAnimationEvent[i])
-            {
-                if (speed[i] != 0.0f)
-                { 
-                    // Incrementa o ângulo de rotação com base na velocidade da bola
-                    rotationAngle += speed[i];
-
-                    // Define a orientação da bola com base no ângulo de rotação
-                    ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle);
-                }
-            }
-        }
-    }
 }
-
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and

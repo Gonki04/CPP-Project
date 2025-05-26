@@ -14,6 +14,7 @@
 #include "Inputs/InputController.h"
 #include <tuple>
 #include "../Texture/Texture.h"
+#include "Balls.h"
 #pragma once
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -28,7 +29,6 @@ namespace Render
         double deltaTime;
         bool Init();
         void Display();
-        void HandleBallCollisions();
 
     private:
         std::map<std::string, Material> materials;
@@ -43,15 +43,7 @@ namespace Render
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
-        std::vector<Mesh> poolBalls;
-        std::vector<glm::vec3> ballPositions;
-        std::vector<glm::vec3> ballOrientations;
-        void DrawPoolBalls();
-        void GeneratePoolBalls();
-        void AnimateBall();
-        void DetectBallsCollisions();
-        void BallsRotation();
-        void CalculateTableBorders();
+        
 
 
         void SetupOpenGL();
