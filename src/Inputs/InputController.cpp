@@ -146,12 +146,6 @@ namespace Render
             prev4 = action;
         }
 
-        if (key == GLFW_KEY_C && action == GLFW_PRESS)
-        {
-            // define a posiçao da bola 1 para uma nova posiçao
-            balls->ResetBall(1, glm::vec3(-20.0f, 4.0f, 0.0f));
-        }
-
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         {
             // define o speed da bola 0 para 10.0f
