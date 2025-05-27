@@ -1,19 +1,19 @@
 #pragma once
 
-#include"VBO.h"
+#include "VBO.h"
 
-namespace Render{
-class VAO
+namespace Render
 {
-public:
-	GLuint ID;
-	VAO();
+	class VAO
+	{
+	public:
+		GLuint ID;
+		VAO();
 
-	//Linka o atributo VBO
-	void LinkVBO(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
-	void Bind();
-	void Unbind();
-	void Delete();
-};
+		void LinkVBO(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset);
+		void Bind();
+		void Unbind();
+		void Delete();
+	};
 
 }
