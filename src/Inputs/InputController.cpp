@@ -18,6 +18,7 @@ namespace Render
         lights[3] = new Light(LightType::Spot);
     }
 
+    // Destrutor que apaga as luzes
     InputController::~InputController()
     {
         for (int i = 0; i < 4; i++) {
@@ -25,18 +26,19 @@ namespace Render
         }
     }
 
+    // Função que define a mesh da mesa e o centro da mesa como target
     void InputController::SetTableMesh(Mesh *table_Mesh)
     {
         this->table_Mesh = table_Mesh;
-        if (target)
+        if (target) // Se já existir um target, apaga-o
             delete target;
-        if (table_Mesh)
-            target = new glm::vec3(table_Mesh->GetCenter());
+        if (table_Mesh) // Se a mesh da mesa não for nula, define o target como o centro da mesa
+            target = new glm::vec3(table_Mesh->GetCenter()); // Calcula o centro da mesa
         else
-            target = nullptr;
+            target = nullptr; // Se a mesh da mesa for nula, o target será nulo
     }
 
-        // Add this setter for Balls
+    // Função que define o ponteiro para as bolas
     void InputController::SetBalls(Balls *balls_ptr)
     {
         this->balls = balls_ptr;
@@ -123,21 +125,25 @@ namespace Render
     {
         if (key == GLFW_KEY_1 && action == GLFW_PRESS)
         {
+            // Ativa/desativa a luz 0 (Ambient)
             lights[0]->Enable(!lights[0]->enabled);
         }
 
         if (key == GLFW_KEY_2 && action == GLFW_PRESS)
         {
+            // Ativa/desativa a luz 1 (Directional)
             lights[1]->Enable(!lights[1]->enabled);
         }
 
         if (key == GLFW_KEY_3 && action == GLFW_PRESS)
         {
+            // Ativa/desativa a luz 2 (Point)
             lights[2]->Enable(!lights[2]->enabled);
         }
 
         if (key == GLFW_KEY_4 && action == GLFW_PRESS)
         {
+            // Ativa/desativa a luz 3 (Spot)
             lights[3]->Enable(!lights[3]->enabled);
         }
 
@@ -149,7 +155,7 @@ namespace Render
 
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         {
-            // define o speed da bola 0 para 10.0f
+            // Define o speed da bola 0 para 10.0f
             balls->SetBallSpeed(0, 10.0f);
         }
     }

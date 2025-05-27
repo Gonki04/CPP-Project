@@ -62,17 +62,18 @@ void Shader::LoadShader(const char* vertexFile, const char* fragmentFile)
 
 void Shader::Activate()
 {
-	glUseProgram(ID);
+	glUseProgram(ID); // Ativa o shader program
 }
 
 void Shader::Delete()
 {
-	glDeleteProgram(ID);
+	glDeleteProgram(ID); // Apaga o shader program
 }
 
+// Função para verificar erros de compilação dos shaders
 void Shader::compileErrors(unsigned int shader, const char* type)
 {
-	GLint hasCompiled;
+	GLint hasCompiled; 
 	char infoLog[1024];
 	if (type != "PROGRAM")
 	{
@@ -94,18 +95,22 @@ void Shader::compileErrors(unsigned int shader, const char* type)
 	}
 }
 
+// Define uma matriz 4x4 no shader
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
+// Define um vetor 3D no shader
 void Shader::SetVec3(const std::string& name, const glm::vec3& vec) const {
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &vec[0]);
 }
 
+// Define um valor float no shader
 void Shader::SetFloat(const std::string& name, float value) const {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+// Define um valor inteiro no shader
 void Shader::SetInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
