@@ -45,25 +45,8 @@ namespace Render {
 		void SetDiffuse(const glm::vec3& diffuse);
 		void SetSpecular(const glm::vec3& specular);
 
-		glm::vec3 GetColor() const;
-		void SetColor(const glm::vec3& color);
-
-        glm::vec3 GetDirection() const;
-        void SetDirection(const glm::vec3& direction);
-
-        glm::vec3 GetPosition() const;
-        void SetPosition(const glm::vec3& position);
-
-        glm::vec3 GetAmbient() const;
-        void SetAmbient(const glm::vec3& ambient);
-
-        glm::vec3 GetDiffuse() const;
-        void SetDiffuse(const glm::vec3& diffuse);
-
-        glm::vec3 GetSpecular() const;
-        void SetSpecular(const glm::vec3& specular);
-
         void SetShaderLightValue(GLuint shader_program, glm::vec3 transformedPointLightPos, glm::vec3 transformedSpotLightPos, glm::vec3 transformedSpotLightDir);
+
         void UpdateShaderLightState(GLuint shader_program);
     };
 }

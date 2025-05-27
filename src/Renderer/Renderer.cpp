@@ -119,7 +119,6 @@ namespace Render
 
         while (!glfwWindowShouldClose(window))
         {
-            glm::vec3 lightPos = glm::vec3(0.0f, 10.0f, 0.0f);
             currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
@@ -136,6 +135,8 @@ namespace Render
             glm::vec3 transformedPointLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalPointLightPos, 1.0f));
             glm::vec3 transformedSpotLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightPos, 1.0f));
             glm::vec3 transformedSpotLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightDir, 0.0f))); // w=0 para direcoes
+
+            inputController->lights[3]->SetAmbient(glm::vec3(2.0f));
 
             // agora, envia estas 'transformed...' para o teu shader
 
