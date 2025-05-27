@@ -200,7 +200,7 @@ namespace Render
 	}
 
 	// Função que renderiza o modelo na posição e orientação especificadas
-    void Mesh::Render(glm::vec3 position, glm::vec3 orientation)
+    void Mesh::Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform)
     {
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, position);
@@ -208,6 +208,8 @@ namespace Render
         transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f));
         transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        Draw(shader, transform);
+		glm::mat4 finalModel = globalTransform * transform;
+
+        Draw(shader, finalModel);
     }
 }

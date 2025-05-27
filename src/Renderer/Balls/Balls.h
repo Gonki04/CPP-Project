@@ -16,7 +16,7 @@ namespace Render
             GeneratePoolBalls(shader); // assim que a classe for instanciada, as bolas serão geradas
         }
 
-        void BallsControl(GLFWwindow *window, double deltaTime); // controla as bolas, atualizando suas posições e animações
+        void BallsControl(GLFWwindow *window, double deltaTime,glm::mat4 &globalRotationMatrix); // controla as bolas, atualizando suas posições e animações
         void ResetBall(); // reseta a posição e velocidade da bola branca
         void SetBallSpeed(int index, double newSpeed); // define a velocidade de uma bola específica
 
@@ -27,7 +27,7 @@ namespace Render
         std::vector<glm::vec3> ballOrientations; // orientações das bolas de bilhar
 
         void GeneratePoolBalls(Shader &shader);
-        void DrawPoolBalls();
+        void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
         void AnimateBall(GLFWwindow *window, double deltaTime);
         void DetectBallsCollisions();
         void CalculateTableBorders();

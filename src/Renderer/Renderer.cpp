@@ -104,7 +104,7 @@ namespace Render
         inputController->SetBalls(BallsAnimation);
 
         glm::vec3 tableCenter = mesh_table.GetCenter();
-        camera.Position = glm::vec3(0.0f, 70.0f, 70.0f);
+        camera.Position = glm::vec3(0.0f, 40.0f, 70.0f);
         camera.Orientation = glm::normalize(tableCenter - camera.Position); // Looking down the Z-axis
 
         if (inputController)
@@ -125,6 +125,7 @@ namespace Render
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            glm::mat4 globalRotationMatrix = inputController->GetGlobalRotationMatrix();
 
             glm::vec3 originalPointLightPos = glm::vec3(0.0f, 5.0f, 0.0f);                                       
             glm::vec3 originalSpotLightPos = glm::vec3(3.0f, 2.0f, 3.0f);                                        
@@ -144,10 +145,10 @@ namespace Render
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
-            mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f));
+            mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f), globalRotationMatrix);
 
             inputController->SetBalls(BallsAnimation);
-            BallsAnimation->BallsControl(window, deltaTime);
+            BallsAnimation->BallsControl(window, deltaTime, globalRotationMatrix);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -22,7 +22,7 @@ class Mesh
 public:
 	Mesh(Shader &shader, std::string obj_model_filepathe); // Construtor que carrega o modelo a partir de um ficheiro .obj
 	glm::vec3 GetCenter(); // Função que retorna o centro do modelo
-	void Render(glm::vec3 position, glm::vec3 orientation); // Função que renderiza o modelo na posição e orientação especificadas
+	void Render(glm::vec3 position, glm::vec3 orientation,const glm::mat4& globalTransform); // Função que renderiza o modelo na posição e orientação especificadas
 	glm::vec3 velocity; // Velocidade do modelo, usada para animações ou movimentos
 	std::string name; // Nome do modelo, usado para identificação
 
