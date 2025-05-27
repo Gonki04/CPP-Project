@@ -125,16 +125,11 @@ namespace Render
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glm::mat4 globalRotationMatrix = inputController->GetGlobalRotationMatrix();
 
-            glm::vec3 originalPointLightPos = glm::vec3(0.0f, 5.0f, 0.0f);                                       // por exemplo
-            glm::vec3 originalSpotLightPos = glm::vec3(3.0f, 2.0f, 3.0f);                                        // por exemplo
-            glm::vec3 originalSpotLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - originalSpotLightPos); // por exemplo
+            glm::vec3 originalPointLightPos = glm::vec3(0.0f, 5.0f, 0.0f);                                       
+            glm::vec3 originalSpotLightPos = glm::vec3(3.0f, 2.0f, 3.0f);                                        
+            glm::vec3 originalSpotLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - originalSpotLightPos); 
 
-            // aplica a rotacao global so as posicoes e direcoes das luzes
-            glm::vec3 transformedPointLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalPointLightPos, 1.0f));
-            glm::vec3 transformedSpotLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightPos, 1.0f));
-            glm::vec3 transformedSpotLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightDir, 0.0f))); // w=0 para direcoes
 
             inputController->lights[3]->SetAmbient(glm::vec3(2.0f));
 
@@ -142,17 +137,17 @@ namespace Render
 
             shader.SetVec3("viewPos", camera.Position);
 
-			inputController->lights[0]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
-			inputController->lights[1]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
-			inputController->lights[2]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
-			inputController->lights[3]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[0]->SetShaderLightValue(shader.ID, originalPointLightPos, originalSpotLightPos, originalSpotLightDir);
+			inputController->lights[1]->SetShaderLightValue(shader.ID, originalPointLightPos, originalSpotLightPos, originalSpotLightDir);
+			inputController->lights[2]->SetShaderLightValue(shader.ID, originalPointLightPos, originalSpotLightPos, originalSpotLightDir);
+			inputController->lights[3]->SetShaderLightValue(shader.ID, originalPointLightPos, originalSpotLightPos, originalSpotLightDir);
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
             mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f));
 
             inputController->SetBalls(BallsAnimation);
-            BallsAnimation->BallsControl(window, deltaTime, globalRotationMatrix);
+            BallsAnimation->BallsControl(window, deltaTime);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
