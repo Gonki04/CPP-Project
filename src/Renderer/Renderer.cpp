@@ -149,7 +149,7 @@ namespace Render
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
-            mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f), globalRotationMatrix);
+            mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f));
 
             inputController->SetBalls(BallsAnimation);
             BallsAnimation->BallsControl(window, deltaTime, globalRotationMatrix);

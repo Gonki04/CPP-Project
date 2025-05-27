@@ -193,7 +193,7 @@ namespace Render
 		m_EBO.Unbind();
 	}
 
-    void Mesh::Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform) // <-- New parameter
+    void Mesh::Render(glm::vec3 position, glm::vec3 orientation) // <-- New parameter
     {
         glm::mat4 transform = glm::mat4(1.0f); // This is your LOCAL model matrix
         transform = glm::translate(transform, position);
@@ -202,8 +202,7 @@ namespace Render
         transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
         // Combine local transform with global transform *before* drawing
-        glm::mat4 finalModel = globalTransform * transform;
 
-        Draw(shader, finalModel); // Pass the combined matrix to Draw
+        Draw(shader, transform); // Pass the combined matrix to Draw
     }
 }

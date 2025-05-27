@@ -64,12 +64,12 @@ namespace Render
                     float y = basePosition.y;
                     float z = rowStartX + col * colSpacing;
 
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex], globalRotationMatrix);
+                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
                 else // loop de renderização das bolas
                 {
-                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex], globalRotationMatrix);
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex]);
                 }
                 ++ballIndex;
             }

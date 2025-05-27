@@ -22,7 +22,7 @@ class Mesh
 public:
 	Mesh(Shader &shader, std::string obj_model_filepathe);
 	glm::vec3 GetCenter();
-	void Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform);
+	void Render(glm::vec3 position, glm::vec3 orientation);
 	glm::vec3 velocity;
 	std::string name;
 
