@@ -128,13 +128,13 @@ namespace Render
             glm::mat4 globalRotationMatrix = inputController->GetGlobalRotationMatrix();
 
             glm::vec3 originalPointLightPos = glm::vec3(0.0f, 5.0f, 0.0f);                                       
-            glm::vec3 originalSpotLightPos = glm::vec3(3.0f, 2.0f, 3.0f);                                        
-            glm::vec3 originalSpotLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - originalSpotLightPos); 
+            glm::vec3 originalSpotLightPos = glm::vec3(0.0f, 15.0f, 0.0f);                                        
+            glm::vec3 originalSpotLightDir = glm::normalize(glm::vec3(0.0f, -10.0f, 0.0f)); 
+
+            
 
 
             inputController->lights[3]->SetAmbient(glm::vec3(2.0f));
-
-            // agora, envia estas 'transformed...' para o teu shader
 
             shader.SetVec3("viewPos", camera.Position);
 

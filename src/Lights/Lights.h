@@ -26,7 +26,7 @@ namespace Render {
         float quadratic = 0.032f; // Atenuação quadrática
         float exponent_val = 32.0f; // Exponente para o brilho especular
         float cutoff_angle = glm::cos(glm::radians(12.5f)); // Ângulo de corte para luzes do tipo Spot
-        float outr_cutoff_angle = glm::cos(glm::radians(17.5f)); // Ângulo de corte externo para luzes do tipo Spot
+        float outr_cutoff_angle = glm::cos(glm::radians(25.5f)); // Ângulo de corte externo para luzes do tipo Spot
 
         // Luz Direcional
         glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f); // Direção da luz direcional
