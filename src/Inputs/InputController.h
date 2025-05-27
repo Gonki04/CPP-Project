@@ -5,12 +5,15 @@
 #include "../Camera/Camera.h"
 #include "../Renderer/Mesh/Mesh.h"
 #include "../Renderer/Balls.h"
+#include "../Lights/Lights.h"
 
 namespace Render
 {
-    class Balls; // Forward declaration to avoid circular dependency 
+    class Balls; // Forward declaration to avoid circular dependency
     class InputController
     {
+public:
+        Light* lights[4];
 
 
         

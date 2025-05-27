@@ -2,7 +2,7 @@
 
 namespace Render
 {
-    
+
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
     {
@@ -106,7 +106,6 @@ namespace Render
         glm::vec3 tableCenter = mesh_table.GetCenter();
         camera.Position = glm::vec3(0.0f, 70.0f, 70.0f);
         camera.Orientation = glm::normalize(tableCenter - camera.Position); // Looking down the Z-axis
-        
 
         if (inputController)
         {
@@ -120,7 +119,6 @@ namespace Render
 
         while (!glfwWindowShouldClose(window))
         {
-            glm::vec3 lightPos = glm::vec3(0.0f, 10.0f, 0.0f);
             currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
@@ -129,55 +127,25 @@ namespace Render
 
             glm::mat4 globalRotationMatrix = inputController->GetGlobalRotationMatrix();
 
-            glm::vec3 originalDirectionalLightDir = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));
-            glm::vec3 originalPointLightPos = glm::vec3(0.0f, 10.0f, 0.0f);
-            glm::vec3 originalSpotLightPos = glm::vec3(20.0f, 30.0f, 0.0f);
-            glm::vec3 originalSpotLightDir = glm::vec3(0.0f, -1.0f, 0.0f); // Pointing straight down
+            glm::vec3 originalPointLightPos = glm::vec3(0.0f, 5.0f, 0.0f);                                       // por exemplo
+            glm::vec3 originalSpotLightPos = glm::vec3(3.0f, 2.0f, 3.0f);                                        // por exemplo
+            glm::vec3 originalSpotLightDir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - originalSpotLightPos); // por exemplo
 
-
-            glm::vec3 transformedDirectionalLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalDirectionalLightDir, 0.0f)));
-
-            // Point Light (position only)
+            // aplica a rotacao global so as posicoes e direcoes das luzes
             glm::vec3 transformedPointLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalPointLightPos, 1.0f));
-
-            // Spot Light (position and direction)
             glm::vec3 transformedSpotLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightPos, 1.0f));
-            glm::vec3 transformedSpotLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightDir, 0.0f)));
+            glm::vec3 transformedSpotLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightDir, 0.0f))); // w=0 para direcoes
+
+            inputController->lights[3]->SetAmbient(glm::vec3(2.0f));
+
+            // agora, envia estas 'transformed...' para o teu shader
 
             shader.SetVec3("viewPos", camera.Position);
 
-            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
-            shader.SetVec3("ambientLight.color", glm::vec3(0.1f, 0.1f, 0.1f)); // Soft gray ambient
-            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
-            shader.SetVec3("directionalLight.direction", glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
-            shader.SetVec3("directionalLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-            shader.SetVec3("directionalLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-            shader.SetVec3("directionalLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
-            shader.SetVec3("pointLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
-            shader.SetVec3("pointLight.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetVec3("pointLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-            shader.SetVec3("pointLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetFloat("pointLight.kc_atenuation", 1.0f);   // constant
-            shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
-            shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
-            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
-            shader.SetVec3("spotLight.position", glm::vec3(20.0f, 30.0f, 0.0f)); // Above the balls
-            shader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f)); // Pointing straight down
-            shader.SetVec3("spotLight.ambient", glm::vec3(20.5f, 20.5f, 20.5f));
-            shader.SetVec3("spotLight.diffuse", glm::vec3(20.0f, 20.0f, 20.0f));
-            shader.SetVec3("spotLight.specular", glm::vec3(20.0f, 20.0f, 20.0f));
-            shader.SetFloat("spotLight.kc_atenuation", 0.01f);
-            shader.SetFloat("spotLight.kl_atenuation", 0.05f);
-            shader.SetFloat("spotLight.kq_atenuation", 0.01f);
-            shader.SetFloat("spotLight.s_exponent", 32.0f);
-            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(0.5f)));       // inner cone
-            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(30.5f))); // outer cone
-
-            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
-            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
-            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
-            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
+			inputController->lights[0]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[1]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[2]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[3]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 

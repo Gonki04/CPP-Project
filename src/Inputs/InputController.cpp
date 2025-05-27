@@ -11,6 +11,18 @@ namespace Render
         lastX = 400.0f;
         lastY = 300.0f;
         firstMouse = true;
+
+        lights[0] = new Light(LightType::Ambient);
+        lights[1] = new Light(LightType::Directional);
+        lights[2] = new Light(LightType::Point);
+        lights[3] = new Light(LightType::Spot);
+    }
+
+    InputController::~InputController()
+    {
+        for (int i = 0; i < 4; i++) {
+            delete lights[i];
+        }
     }
 
     void InputController::SetTableMesh(Mesh *table_Mesh)
@@ -108,41 +120,24 @@ namespace Render
 
     void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
-
-        if (key == GLFW_KEY_1)
+        if (key == GLFW_KEY_1 && action == GLFW_PRESS)
         {
-            if (action == GLFW_PRESS && prev1 == GLFW_RELEASE)
-            {
-                ambientEnabled = !ambientEnabled;
-            }
-            prev1 = action;
+            lights[0]->Enable(!lights[0]->enabled);
         }
 
-        if (key == GLFW_KEY_2)
+        if (key == GLFW_KEY_2 && action == GLFW_PRESS)
         {
-            if (action == GLFW_PRESS && prev2 == GLFW_RELEASE)
-            {
-                directionalEnabled = !directionalEnabled;
-            }
-            prev2 = action;
+            lights[1]->Enable(!lights[1]->enabled);
         }
 
-        if (key == GLFW_KEY_3)
+        if (key == GLFW_KEY_3 && action == GLFW_PRESS)
         {
-            if (action == GLFW_PRESS && prev3 == GLFW_RELEASE)
-            {
-                pointEnabled = !pointEnabled;
-            }
-            prev3 = action;
+            lights[2]->Enable(!lights[2]->enabled);
         }
 
-        if (key == GLFW_KEY_4)
+        if (key == GLFW_KEY_4 && action == GLFW_PRESS)
         {
-            if (action == GLFW_PRESS && prev4 == GLFW_RELEASE)
-            {
-                spotEnabled = !spotEnabled;
-            }
-            prev4 = action;
+            lights[3]->Enable(!lights[3]->enabled);
         }
 
         if (key == GLFW_KEY_C && action == GLFW_PRESS)
