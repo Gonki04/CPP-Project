@@ -156,15 +156,17 @@ namespace Render
 		this->textures = textures;
 	}
 
+	// Funçao para calcular o centro do mesh através da média das posições dos vértices
+	// que vai ser retornado num vetor center
 	glm::vec3 Mesh::GetCenter()
 	{
-		glm::vec3 center(0.0f);
-		for (const auto &vertex : vertices)
+		glm::vec3 center(0.0f); // inicializa o centro como um vetor nulo
+		for (const auto &vertex : vertices) // iteração sobre o container dos vertices
 		{
-			center += vertex.Position;
+			center += vertex.Position; // adiciona a posição de cada vértice ao centro
 		}
-		center /= static_cast<float>(vertices.size());
-		return center;
+		center /= static_cast<float>(vertices.size()); // divide pela quantidade de vértices para obter a média
+		return center; // retorna o centro calculado
 	}
 
 	void Mesh::Install(void)

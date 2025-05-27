@@ -30,66 +30,65 @@ namespace Render
         this->balls = balls_ptr;
     }
 
-
+    // Funçao que regista os callbacks de input na janela GLFW
     void InputController::SetCallbacks(GLFWwindow *window)
     {
-        glfwSetWindowUserPointer(window, this);
+        glfwSetWindowUserPointer(window, this); // Armazena o ponteiro do InputController na janela GLFW
 
         glfwSetCursorPosCallback(window, [](GLFWwindow *win, double xpos, double ypos)
-                                 {
+                                 { // Callback para o movimento do rato
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
-        if (controller) controller->CursorCallback(win, xpos, ypos); });
+        if (controller) controller->CursorCallback(win, xpos, ypos); }); 
 
         glfwSetScrollCallback(window, [](GLFWwindow *win, double xoffset, double yoffset)
-                              {
+                              { // Callback para o scroll do rato
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->ScrollCallback(win, xoffset, yoffset); });
 
         glfwSetKeyCallback(window, [](GLFWwindow *win, int key, int scancode, int action, int mods)
-                           {
+                           { // Callback para o teclado
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->KeyCallback(win, key, scancode, action, mods); });
     }
 
+    // Função que lida com o scroll do rato para alterar o FOV (zoom in/out)
     void InputController::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
     {
-        camera->HandleScroll(yoffset);
+        camera->HandleScroll(yoffset); // Chama a função da câmara para o zoom in/out
     }
 
+    // Função que lida com o movimento do rato para controlar a rotação do modelo
     void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypos)
     {
-        if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS))
+        if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS)) // Verificação se o botão esquerdo do rato é pressionado
         {
             return;
         }
 
-        if (firstMouse)
+        if (firstMouse) // Verifica se é o primeiro movimento do rato
         {
-            lastX = xpos;
-            lastY = ypos;
-            firstMouse = false;
+            lastX = xpos; // Armazena a posição X do rato
+            lastY = ypos; // Armazena a posição Y do rato
+            firstMouse = false; 
         }
 
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos; // invertido
-        lastX = xpos;
-        lastY = ypos;
+        float xoffset = xpos - lastX; // Diferença entre a posição atual e a última posição X do rato
+        float yoffset = lastY - ypos; // Diferença entre a posição atual e a última posição Y do rato
+        lastX = xpos; // Atualiza a última posição X do rato
+        lastY = ypos; // Atualiza a última posição Y do rato
 
-        float sensitivity = 0.1f;
-        xoffset *= sensitivity;
-        yoffset *= sensitivity;
+        float sensitivity = 0.1f; // Sensibilidade do rato
+        xoffset *= sensitivity; // Multiplica a diferença X pela sensibilidade
+        yoffset *= sensitivity; // Multiplica a diferença Y pela sensibilidade
 
-        modelYaw += xoffset;
-        modelPitch += yoffset;
+        modelYaw += xoffset; // Atualiza o ângulo de rotação em Y com a diferença X
+        modelPitch += yoffset; // Atualiza o ângulo de rotação em X com a diferença Y
 
-        if (modelPitch > 89.0f)
-            modelPitch = 89.0f;
-        if (modelPitch < -89.0f)
+        if (modelPitch > 89.0f) // Limita o ângulo de rotação em X para não ultrapassar 89 graus 
+            modelPitch = 89.0f; 
+        if (modelPitch < -89.0f) // Limita o ângulo de rotação em X para não ultrapassar -89 graus
             modelPitch = -89.0f;
 
-        std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
-        std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
-        std::cout << "Camera Orientation: " << camera->Orientation.x << ", " << camera->Orientation.y << ", " << camera->Orientation.z << std::endl;
     }
 
     glm::mat4 InputController::GetGlobalRotationMatrix() const
@@ -107,6 +106,7 @@ namespace Render
         return rotation;
     }
 
+    // Função que lida com as teclas pressionadas para ativar/desativar as luzes e controlar as bolas
     void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
 
