@@ -16,7 +16,7 @@ public:
     }
 
     void BallsControl(GLFWwindow *window, double deltaTime, glm::mat4 &globalRotationMatrix);
-    void ResetBall(int index, const glm::vec3 &pos);
+    void ResetBall();
     void SetBallSpeed(int index, double newSpeed);
 
 private:

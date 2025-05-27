@@ -19,7 +19,6 @@ namespace Render
     {
         std::string obj_model_filepath = "resources/Assets/";
         std::string obj_model_fileextension = ".obj";
-        ballPositions.clear(); // Limpa as posições
 
         for (int i = 1; i < 16; ++i)
         {
@@ -29,8 +28,8 @@ namespace Render
             ball.name = "Ball" + std::to_string(i);
 
             poolBalls.push_back(ball);
-            ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));
-            ballOrientations.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+            ballPositions.push_back(glm::vec3(0.0f, 4.0f, 20.0f));   // posição inicial de todas as bolas
+            ballOrientations.push_back(glm::vec3(0.0f, 0.0f, 0.0f)); // orientação inicial de todas as bolas
         }
     }
 
@@ -38,25 +37,26 @@ namespace Render
     {
         // Parameters for triangle layout
         float ballRadius = 1.0f;                      // Adjust to your model's scale
-        float rowSpacing = ballRadius * 10.0f;         // Distance between rows
+        float rowSpacing = ballRadius * 10.0f;        // distancia entre as linhas
         float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
 
-        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, -10.0f); // Center of the triangle base
+        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, -25.0f); // posição do centro do triângulo
 
         int ballIndex = 0;
-        for (int row = 0; row < 5; ++row)
-        {
+        // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
+        for (int row = 0; row < 5; ++row){
             int ballsInRow = row + 1;
-            // Center the row horizontally
+            
             float rowZ = basePosition.z + (row * rowSpacing);
             float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
 
             for (int col = 0; col < ballsInRow; ++col)
             {
                 if (ballIndex >= poolBalls.size())
-                    return;
-
-                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f))
+                {
+                    return; // encerra o loop assim que tods as bolas forem renderizadas
+                }
+                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f))  // redefine as bolas que estiverem na posição inicial
                 {
                     float x = rowZ;
                     float y = basePosition.y;
@@ -65,7 +65,7 @@ namespace Render
                     poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex], globalRotationMatrix);
                     ballPositions[ballIndex] = glm::vec3(x, y, z);
                 }
-                else
+                else // loop de renderização das bolas
                 {
                     poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex], globalRotationMatrix);
                 }
@@ -74,14 +74,18 @@ namespace Render
         }
     }
 
-    void Balls::ResetBall(int index, const glm::vec3 &pos)
+    void Balls::ResetBall()
     {
-        if (index >= 0 && index < ballPositions.size())
+        // Reseta a posição e velocidade de todas as bolas
+        for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            ballPositions[index] = pos;
-            onAnimationEvent[index] = true;
-        }
+            ballPositions[i] = glm::vec3(0.0f, 4.0f, 20.0f);    // Posição inicial
+            speed[i] = 0.0f;                                    // Velocidade inicial
+            onAnimationEvent[i] = false;                        // Reseta o estado de animação
+            ballOrientations[i] = glm::vec3(0.0f, 0.0f, 0.0f);  // Orientação inicial
     }
+    }
+   
 
     void Balls::SetBallSpeed(int index, double newSpeed)
     {
