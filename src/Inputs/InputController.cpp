@@ -108,12 +108,12 @@ namespace Render
     glm::mat4 InputController::GetGlobalRotationMatrix() const
     {
         glm::mat4 rotation = glm::mat4(1.0f);
-        // Rotate around the table's center if available, otherwise origin
+        // roda a volta da mesa
         glm::vec3 rotationCenter = target ? *target : glm::vec3(0.0f);
 
-        // Translate to origin, rotate, then translate back
+        // Translada para o centro da mesa, aplica a rotação e depois traduz de volta
         rotation = glm::translate(rotation, rotationCenter);
-        rotation = glm::rotate(rotation, glm::radians(modelYaw), glm::vec3(0.0f, 1.0f, 0.0f));   // Yaw around Y-axis
+        rotation = glm::rotate(rotation, glm::radians(modelYaw), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotação em Y
         
         rotation = glm::translate(rotation, -rotationCenter);
 
