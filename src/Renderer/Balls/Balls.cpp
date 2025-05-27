@@ -6,9 +6,9 @@ namespace Render
     static bool onAnimationEvent[16] = {false};
     static double speed[16] = {0.0f};
 
-    void Balls::BallsControl(GLFWwindow *window, double deltaTime, glm::mat4 &globalRotationMatrix)
+    void Balls::BallsControl(GLFWwindow *window, double deltaTime)
     {
-        DrawPoolBalls(globalRotationMatrix);
+        DrawPoolBalls();
         AnimateBall(window, deltaTime);
         DetectBallsCollisions();
         CalculateTableBorders();
@@ -35,7 +35,7 @@ namespace Render
     }
 
     // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
-    void Balls::DrawPoolBalls(glm::mat4 &globalRotationMatrix)
+    void Balls::DrawPoolBalls()
     {
         // Parameters for triangle layout
         float ballRadius = 1.0f;                      // escala das bolas

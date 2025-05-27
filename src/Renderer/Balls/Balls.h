@@ -16,7 +16,7 @@ namespace Render
             GeneratePoolBalls(shader); // assim que a classe for instanciada, as bolas serão geradas
         }
 
-        void BallsControl(GLFWwindow *window, double deltaTime, glm::mat4 &globalRotationMatrix);
+        void BallsControl(GLFWwindow *window, double deltaTime);
         void ResetBall();
         void SetBallSpeed(int index, double newSpeed);
 
@@ -27,7 +27,7 @@ namespace Render
         std::vector<glm::vec3> ballOrientations;
 
         void GeneratePoolBalls(Shader &shader);
-        void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
+        void DrawPoolBalls();
         void AnimateBall(GLFWwindow *window, double deltaTime);
         void DetectBallsCollisions();
         void CalculateTableBorders();
