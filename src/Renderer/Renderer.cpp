@@ -2,7 +2,7 @@
 
 namespace Render
 {
-    Camera camera(800, 600, glm::vec3(-20.0f, 5.0f, 0.0f));
+    
     // Error callback for GLFW
     static void GLFWErrorCallback(int error, const char *description)
     {
@@ -98,12 +98,14 @@ namespace Render
         mesh_table.name = "table";
 
         InputController *inputController = nullptr;
-        glm::vec3 Tpose = mesh_table.GetCenter();
-        camera.Position = Tpose + glm::vec3(0.0f, 0.0f, 70.0f);
-        camera.Orientation = glm::normalize(Tpose - camera.Position);
 
         inputController = new InputController(&camera);
         inputController->SetTableMesh(&mesh_table);
+        inputController->SetBalls(BallsAnimation);
+
+        glm::vec3 tableCenter = mesh_table.GetCenter();
+        camera.Position = tableCenter + glm::vec3(0.0f, 0.0f, 70.0f);
+        camera.Orientation = glm::normalize(tableCenter - camera.Position);
 
         if (inputController)
         {
@@ -123,7 +125,25 @@ namespace Render
             lastFrame = currentFrame;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            shader.SetVec3("lightPos", lightPos);
+
+            glm::mat4 globalRotationMatrix = inputController->GetGlobalRotationMatrix();
+
+
+            glm::vec3 originalDirectionalLightDir = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));
+            glm::vec3 originalPointLightPos = glm::vec3(0.0f, 10.0f, 0.0f);
+            glm::vec3 originalSpotLightPos = glm::vec3(20.0f, 30.0f, 0.0f);
+            glm::vec3 originalSpotLightDir = glm::vec3(0.0f, -1.0f, 0.0f); // Pointing straight down
+
+
+            glm::vec3 transformedDirectionalLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalDirectionalLightDir, 0.0f)));
+
+            // Point Light (position only)
+            glm::vec3 transformedPointLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalPointLightPos, 1.0f));
+
+            // Spot Light (position and direction)
+            glm::vec3 transformedSpotLightPos = glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightPos, 1.0f));
+            glm::vec3 transformedSpotLightDir = glm::normalize(glm::vec3(globalRotationMatrix * glm::vec4(originalSpotLightDir, 0.0f)));
+
             shader.SetVec3("viewPos", camera.Position);
 
             shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
@@ -161,10 +181,10 @@ namespace Render
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
-            mesh_table.Render(glm::vec3(0.0f), glm::vec3(inputController->modelPitch, inputController->modelYaw, 0.0f));
+            mesh_table.Render(glm::vec3(0.0f), glm::vec3(0.0f), globalRotationMatrix);
 
             inputController->SetBalls(BallsAnimation);
-            BallsAnimation->BallsControl(window, deltaTime);
+            BallsAnimation->BallsControl(window, deltaTime, globalRotationMatrix);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

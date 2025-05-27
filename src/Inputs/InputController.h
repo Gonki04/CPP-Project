@@ -8,10 +8,12 @@
 
 namespace Render
 {
-    class Balls;
+    class Balls; // Forward declaration to avoid circular dependency 
     class InputController
     {
 
+
+        
     public:
         InputController(Camera *camera);
         ~InputController();
@@ -21,16 +23,21 @@ namespace Render
         void CursorCallback(GLFWwindow *window, double xpos, double ypos);
         void SetCallbacks(GLFWwindow *window);
         void SetTableMesh(Mesh *table_Mesh);
+        void SetBalls(Balls *balls_ptr); // Added to set the Balls pointer
 
-        void SetBalls(Balls *ballsPtr) { balls = ballsPtr; }
 
         // Luzes
-        float modelYaw = 0.0f;
-        float modelPitch = 0.0f;
+        float modelYaw;
+        float modelPitch;
+
+
         bool ambientEnabled = true;
         bool directionalEnabled = true;
         bool pointEnabled = true;
         bool spotEnabled = true;
+
+
+        glm::mat4 GetGlobalRotationMatrix() const;
 
     private:
         Camera *camera;

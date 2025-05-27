@@ -1,17 +1,12 @@
 #pragma once
 #include "../headers.h"
-#include <GL/glew.h>
 #include <Camera/Camera.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
 #include "Shader/shaderClass.h"
 #include "Mesh/Mesh.h"
-#include "Inputs/InputController.h"
+#include "../Inputs/InputController.h"
 #include <tuple>
 #include "../Texture/Texture.h"
 #include "Balls.h"
@@ -34,6 +29,7 @@ namespace Render
         std::map<std::string, Material> materials;
         GLFWwindow *window = nullptr;
         int width, height;
+        Render::Camera camera = Camera(width, height, glm::vec3(-20.0f, 5.0f, 0.0f));
         std::string title;
         double currentFrame, lastFrame;
         VAO *vao = nullptr;

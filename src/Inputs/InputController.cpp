@@ -24,6 +24,13 @@ namespace Render
             target = nullptr;
     }
 
+        // Add this setter for Balls
+    void InputController::SetBalls(Balls *balls_ptr)
+    {
+        this->balls = balls_ptr;
+    }
+
+
     void InputController::SetCallbacks(GLFWwindow *window)
     {
         glfwSetWindowUserPointer(window, this);
@@ -82,6 +89,21 @@ namespace Render
 
         std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
         std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
+    }
+
+    glm::mat4 InputController::GetGlobalRotationMatrix() const
+    {
+        glm::mat4 rotation = glm::mat4(1.0f);
+        // Rotate around the table's center if available, otherwise origin
+        glm::vec3 rotationCenter = target ? *target : glm::vec3(0.0f);
+
+        // Translate to origin, rotate, then translate back
+        rotation = glm::translate(rotation, rotationCenter);
+        rotation = glm::rotate(rotation, glm::radians(modelYaw), glm::vec3(0.0f, 1.0f, 0.0f));   // Yaw around Y-axis
+        rotation = glm::rotate(rotation, glm::radians(modelPitch), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch around X-axis
+        rotation = glm::translate(rotation, -rotationCenter);
+
+        return rotation;
     }
 
     void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)

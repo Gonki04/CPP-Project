@@ -13,37 +13,37 @@ namespace Render
 		Install();
 	}
 
-	void Mesh::Draw(Shader &shader, glm::mat4 model)
-	{ // use my default shaders and setup view model projection for testing
-		shader.SetMat4("u_Model", model);
+    void Mesh::Draw(Shader &shader, glm::mat4 model) // <-- Back to original signature, but `model` is now combined
+    {
+        shader.Activate(); // Ensure shader is active
 
-		shader.SetVec3("material.ambient", material.ambient);
-		shader.SetVec3("material.diffuse", material.diffuse);
-		shader.SetVec3("material.specular", material.specular);
-		shader.SetFloat("material.shininess", material.shininess);
+        shader.SetMat4("u_Model", model); // Send the final combined matrix to the shader
 
-		// Bind textures if any
-		for (unsigned int i = 0; i < textures.size(); ++i)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-			// Optionally set sampler uniform if needed
-			// shader.SetInt("texture" + std::to_string(i), i);
-		}
-		glActiveTexture(GL_TEXTURE0); // Reset active texture
+        shader.SetVec3("material.ambient", material.ambient);
+        shader.SetVec3("material.diffuse", material.diffuse);
+        shader.SetVec3("material.specular", material.specular);
+        shader.SetFloat("material.shininess", material.shininess);
 
-		m_VAO.Bind();
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
-		m_VAO.Unbind();
+        // Bind textures
+        for (unsigned int i = 0; i < textures.size(); ++i)
+        {
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        }
+        
+        m_VAO.Bind();
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+        m_VAO.Unbind();
 
-		// Unbind textures
-		for (unsigned int i = 0; i < textures.size(); ++i)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		glActiveTexture(GL_TEXTURE0);
-	}
+        // Unbind textures
+        for (unsigned int i = 0; i < textures.size(); ++i)
+        {
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        glActiveTexture(GL_TEXTURE0); // Reset active texture unit to 0 for next draw call
+    }
+
 
 	void Mesh::Load(std::string obj_model_filepath)
 	{
@@ -191,14 +191,17 @@ namespace Render
 		m_EBO.Unbind();
 	}
 
-	void Mesh::Render(glm::vec3 position, glm::vec3 orientation)
-	{
+    void Mesh::Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform) // <-- New parameter
+    {
+        glm::mat4 transform = glm::mat4(1.0f); // This is your LOCAL model matrix
+        transform = glm::translate(transform, position);
+        transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, position);
-		transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		Draw(shader, transform);
-	}
+        // Combine local transform with global transform *before* drawing
+        glm::mat4 finalModel = globalTransform * transform;
+
+        Draw(shader, finalModel); // Pass the combined matrix to Draw
+    }
 }
