@@ -6,9 +6,9 @@ namespace Render
     static bool onAnimationEvent[16] = {false};
     static double speed[16] = {0.0f};
 
-    void Balls::BallsControl(GLFWwindow *window, double deltaTime)
+    void Balls::BallsControl(GLFWwindow *window, double deltaTime,glm::mat4 &globalRotationMatrix)
     {
-        DrawPoolBalls();
+        DrawPoolBalls(globalRotationMatrix);
         AnimateBall(window, deltaTime);
         DetectBallsCollisions();
         CalculateTableBorders();
@@ -35,7 +35,7 @@ namespace Render
     }
 
     // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
-    void Balls::DrawPoolBalls()
+    void Balls::DrawPoolBalls(glm::mat4 &globalRotationMatrix)
     {
         // Parameters for triangle layout
         float ballRadius = 1.0f;                      // escala das bolas
@@ -64,12 +64,12 @@ namespace Render
                     float y = basePosition.y;               //
                     float z = rowStartX + col * colSpacing; //
 
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
+                     poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex], globalRotationMatrix);
                     ballPositions[ballIndex] = glm::vec3(x, y, z);  // guarda a posição das bolas numa variável
                 }
                 else // loop de renderização das bolas
                 {
-                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex]);
+                    poolBalls[ballIndex].Render(ballPositions[ballIndex], ballOrientations[ballIndex], globalRotationMatrix);
                 }
                 ++ballIndex;
             }

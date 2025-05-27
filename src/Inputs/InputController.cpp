@@ -114,7 +114,7 @@ namespace Render
         // Translate to origin, rotate, then translate back
         rotation = glm::translate(rotation, rotationCenter);
         rotation = glm::rotate(rotation, glm::radians(modelYaw), glm::vec3(0.0f, 1.0f, 0.0f));   // Yaw around Y-axis
-        rotation = glm::rotate(rotation, glm::radians(modelPitch), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch around X-axis
+        
         rotation = glm::translate(rotation, -rotationCenter);
 
         return rotation;
