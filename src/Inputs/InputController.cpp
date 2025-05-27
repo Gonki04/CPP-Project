@@ -89,6 +89,7 @@ namespace Render
 
         std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
         std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
+        std::cout << "Camera Orientation: " << camera->Orientation.x << ", " << camera->Orientation.y << ", " << camera->Orientation.z << std::endl;
     }
 
     glm::mat4 InputController::GetGlobalRotationMatrix() const
