@@ -141,39 +141,10 @@ namespace Render
 
             shader.SetVec3("viewPos", camera.Position);
 
-            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
-            shader.SetVec3("ambientLight.color", glm::vec3(0.1f, 0.1f, 0.1f)); // Soft gray ambient
-            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
-            shader.SetVec3("directionalLight.direction", glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)));
-            shader.SetVec3("directionalLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-            shader.SetVec3("directionalLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-            shader.SetVec3("directionalLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
-            shader.SetVec3("pointLight.position", transformedPointLightPos);
-
-            shader.SetVec3("pointLight.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetVec3("pointLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-            shader.SetVec3("pointLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-            shader.SetFloat("pointLight.kc_atenuation", 1.0f);   // constant
-            shader.SetFloat("pointLight.kl_atenuation", 0.09f);  // linear
-            shader.SetFloat("pointLight.kq_atenuation", 0.032f); // quadratic
-            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
-            shader.SetVec3("spotLight.position", transformedSpotLightPos);
-            shader.SetVec3("spotLight.direction", transformedSpotLightDir);
-            shader.SetVec3("spotLight.ambient", glm::vec3(20.5f, 20.5f, 20.5f));
-            shader.SetVec3("spotLight.diffuse", glm::vec3(20.0f, 20.0f, 20.0f));
-            shader.SetVec3("spotLight.specular", glm::vec3(20.0f, 20.0f, 20.0f));
-            shader.SetFloat("spotLight.kc_atenuation", 0.01f);
-            shader.SetFloat("spotLight.kl_atenuation", 0.05f);
-            shader.SetFloat("spotLight.kq_atenuation", 0.01f);
-            shader.SetFloat("spotLight.s_exponent", 32.0f);
-            shader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(0.5f)));       // inner cone
-            shader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(30.5f))); // outer cone
-
-            shader.SetInt("ambientLight.enabled", inputController->ambientEnabled ? 1 : 0);
-            shader.SetInt("directionalLight.enabled", inputController->directionalEnabled ? 1 : 0);
-            shader.SetInt("pointLight.enabled", inputController->pointEnabled ? 1 : 0);
-            shader.SetInt("spotLight.enabled", inputController->spotEnabled ? 1 : 0);
+			inputController->lights[0]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[1]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[2]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
+			inputController->lights[3]->SetShaderLightValue(shader.ID, transformedPointLightPos, transformedSpotLightPos, transformedSpotLightDir);
 
             camera.Matrix(camera.fov_, 0.1f, 1000.0f, shader, "u_ViewProjection");
 
