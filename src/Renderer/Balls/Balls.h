@@ -19,6 +19,8 @@ namespace Render
         void BallsControl(GLFWwindow *window, double deltaTime, glm::mat4 &globalRotationMatrix);
         void ResetBall();
         void SetBallSpeed(int index, double newSpeed);
+        Mesh* GetSphereMesh() { return &poolBalls[0]; } // Retorna a primeira bola como referência
+        void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
 
     private:
         Shader &shader;
@@ -27,7 +29,6 @@ namespace Render
         std::vector<glm::vec3> ballOrientations;
 
         void GeneratePoolBalls(Shader &shader);
-        void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
         void AnimateBall(GLFWwindow *window, double deltaTime);
         void DetectBallsCollisions();
         void CalculateTableBorders();

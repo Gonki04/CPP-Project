@@ -154,6 +154,9 @@ namespace Render
             inputController->SetBalls(BallsAnimation);
             BallsAnimation->BallsControl(window, deltaTime, globalRotationMatrix);
 
+            // Desenhar o minimapa
+            drawMinimap(mesh_table, *BallsAnimation, &shader, width, height);
+
             glfwSwapBuffers(window);
             glfwPollEvents();
         }

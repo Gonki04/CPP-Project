@@ -10,6 +10,7 @@
 #include <tuple>
 #include "../Texture/Texture.h"
 #include "Balls/Balls.h"
+#include "../Minimap/Minimap.h"
 #pragma once
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

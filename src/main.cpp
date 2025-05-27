@@ -1,5 +1,5 @@
 ﻿//#include <Camera/Camera.h>
-//#include "Minimap/Minimap.h"
+#include "Minimap/Minimap.h"
 #include <Renderer/Renderer.h>
 #include <Windows.h>
 #include <iostream>
