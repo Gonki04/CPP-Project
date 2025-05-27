@@ -8,7 +8,7 @@
 
 namespace Render
 {
-
+    class Balls;
     class InputController
     {
 

@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+namespace Render {
+
 Camera::Camera(int width, int height, glm::vec3 position)
 {
     Camera::width = width;
@@ -25,3 +27,4 @@ void Camera::HandleScroll(double yoffset) {
 }
 
 
+}
