@@ -5,46 +5,47 @@
 
 namespace Render
 {
-
+	// Construtor que carrega o modelo a partir de um ficheiro .obj
 	Mesh::Mesh(Shader &shader, std::string obj_model_filepath)
 	{
 		this->shader = shader;
 		Load(obj_model_filepath);
 		Install();
 	}
-
-    void Mesh::Draw(Shader &shader, glm::mat4 model) // <-- Back to original signature, but `model` is now combined
+	
+	// Função que calcula o centro do modelo
+    void Mesh::Draw(Shader &shader, glm::mat4 model) 
     {
-        shader.Activate(); // Ensure shader is active
+        shader.Activate(); // Ativa o shader program
 
-        shader.SetMat4("u_Model", model); // Send the final combined matrix to the shader
+        shader.SetMat4("u_Model", model); // Define a matriz de modelo no shader
 
-        shader.SetVec3("material.ambient", material.ambient);
-        shader.SetVec3("material.diffuse", material.diffuse);
-        shader.SetVec3("material.specular", material.specular);
-        shader.SetFloat("material.shininess", material.shininess);
+        shader.SetVec3("material.ambient", material.ambient); // Define a cor ambiente do material no shader
+        shader.SetVec3("material.diffuse", material.diffuse); // Define a cor difusa do material no shader
+        shader.SetVec3("material.specular", material.specular); // Define a cor especular do material no shader
+        shader.SetFloat("material.shininess", material.shininess); // Define o brilho especular do material no shader
 
-        // Bind textures
+        // Liga as texturas ao shader
         for (unsigned int i = 0; i < textures.size(); ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
         
-        m_VAO.Bind();
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
-        m_VAO.Unbind();
+        m_VAO.Bind(); // Liga o VAO para uso
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0); 
+        m_VAO.Unbind(); // Desliga o VAO
 
-        // Unbind textures
+        // Desliga as texturas
         for (unsigned int i = 0; i < textures.size(); ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
-        glActiveTexture(GL_TEXTURE0); // Reset active texture unit to 0 for next draw call
+        glActiveTexture(GL_TEXTURE0); // Reseta a textura ativa para 0
     }
 
-
+	// Função que renderiza o modelo na posição e orientação especificadas
 	void Mesh::Load(std::string obj_model_filepath)
 	{
 		std::vector<glm::vec3> positions;
@@ -65,7 +66,6 @@ namespace Render
 		std::string line;
 		while (getline(file, line))
 		{
-			// Skip empty lines or comments
 			if (line.empty() || line[0] == '#')
 				continue;
 
@@ -104,13 +104,13 @@ namespace Render
 					int vtIdx = std::stoi(vertexStr.substr(pos1 + 1, pos2 - pos1 - 1)) - 1;
 					int vnIdx = std::stoi(vertexStr.substr(pos2 + 1)) - 1;
 
-					// Check ranges before accessing
+					// Verifica se os índices estão dentro dos limites
 					if (vIdx < 0 || vIdx >= positions.size() ||
 						vtIdx < 0 || vtIdx >= texcoords.size() ||
 						vnIdx < 0 || vnIdx >= normals.size())
 					{
 						std::cerr << "OBJ index out of range: v=" << vIdx << " vt=" << vtIdx << " vn=" << vnIdx << std::endl;
-						continue; // or handle error
+						continue; 
 					}
 
 					auto key = std::make_tuple(vIdx, vtIdx, vnIdx);
@@ -126,7 +126,7 @@ namespace Render
 					indices.push_back(uniqueVertexMap[key]);
 				}
 			}
-			else if (prefix == "mtllib") // Material library
+			else if (prefix == "mtllib")
 			{
 				iss >> mtlFilePath;
 				mtlFilePath = Texture::GetTexturePath(obj_model_filepath, mtlFilePath);
@@ -137,7 +137,7 @@ namespace Render
 				iss >> currentMaterialName;
 				if (materials.find(currentMaterialName) != materials.end())
 				{
-					this->material = materials[currentMaterialName]; // Store in member variable
+					this->material = materials[currentMaterialName]; // Define o material atual
 
 					if (material.diffuseMap != 0)
 					{
@@ -169,41 +169,47 @@ namespace Render
 		return center; // retorna o centro calculado
 	}
 
+	// Função que instala o modelo no VAO, VBO e EBO
 	void Mesh::Install(void)
 	{
+		// Verifica se os vetores de vértices e índices estão vazios
 		if (vertices.empty() || indices.empty())
 		{
 			std::cerr << "Mesh::setupMesh: vertices or indices are empty!" << std::endl;
 			return;
 		}
 
+		// Verifica se o VAO, VBO e EBO já estão vinculados
 		m_VAO.Bind();
 		m_VBO.Bind();
 		m_EBO.Bind();
 
+		// Gera IDs para o VAO, VBO e EBO se ainda não estiverem criados
 		m_VBO.BufferData(vertices);
 		m_EBO.BufferData(indices);
 
+		// Liga o VAO e vincula os VBOs e EBOs
 		m_VAO.LinkVBO(m_VBO, 0, 3, GL_FLOAT, sizeof(Vertex), (void *)0);
 		m_VAO.LinkVBO(m_VBO, 1, 3, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, Normal));
 		m_VAO.LinkVBO(m_VBO, 2, 2, GL_FLOAT, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
+		// Desliga o VAO, VBO e EBO após a configuração
 		m_VAO.Unbind();
 		m_VBO.Unbind();
 		m_EBO.Unbind();
 	}
 
-    void Mesh::Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform) // <-- New parameter
+	// Função que renderiza o modelo na posição e orientação especificadas
+    void Mesh::Render(glm::vec3 position, glm::vec3 orientation, const glm::mat4& globalTransform)
     {
-        glm::mat4 transform = glm::mat4(1.0f); // This is your LOCAL model matrix
+        glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, position);
         transform = glm::rotate(transform, glm::radians(orientation.x), glm::vec3(1.0f, 0.0f, 0.0f));
         transform = glm::rotate(transform, glm::radians(orientation.y), glm::vec3(0.0f, 1.0f, 0.0f));
         transform = glm::rotate(transform, glm::radians(orientation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        // Combine local transform with global transform *before* drawing
-        glm::mat4 finalModel = globalTransform * transform;
+		glm::mat4 finalModel = globalTransform * transform;
 
-        Draw(shader, finalModel); // Pass the combined matrix to Draw
+        Draw(shader, finalModel);
     }
 }

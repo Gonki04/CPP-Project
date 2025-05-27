@@ -4,22 +4,24 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-namespace Render {
+namespace Render
+{
 
-struct Vertex {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
-};
+	struct Vertex
+	{
+		glm::vec3 Position; // Posição do vértice
+		glm::vec3 Normal; // Normal do vértice
+		glm::vec2 TexCoords; // Coordenadas de textura do vértice
+	};
 
-class VBO {
-public:
-	VBO();
-	GLuint ID;
-	void BufferData(const std::vector<Vertex>& vertices);
-	void Bind();
-	void Unbind();
-	void Delete();
-};
-
+	class VBO 
+	{
+	public:
+		VBO(); // Construtor que cria o VBO e gera um ID
+		GLuint ID; // ID do Vertex Buffer Object
+		void BufferData(const std::vector<Vertex> &vertices); // Envia os dados dos vértices para o VBO
+		void Bind(); // Liga o VBO para uso
+		void Unbind(); // Desliga o VBO
+		void Delete(); // Apaga o VBO
+	};
 }

@@ -9,7 +9,6 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
 # Add subdirectories
-add_subdirectory(glad/)
 add_subdirectory(extern/glew)
 
 # Set C++ standard
@@ -38,7 +37,6 @@ target_link_libraries(CPP_Project PRIVATE
     glfw
     glm::glm
     libglew_static
-    glad
 )
 
 # Include directories - add root and all subdirectories
