@@ -15,6 +15,7 @@ namespace Render
         BallsRotation();
     }
 
+    
     void Balls::GeneratePoolBalls(Shader &shader)
     {
         std::string obj_model_filepath = "resources/Assets/";
@@ -44,9 +45,10 @@ namespace Render
 
         int ballIndex = 0;
         // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
-        for (int row = 0; row < 5; ++row){
+        for (int row = 0; row < 5; ++row)
+        {
             int ballsInRow = row + 1;
-            
+
             float rowZ = basePosition.z + (row * rowSpacing);
             float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
 
@@ -56,7 +58,7 @@ namespace Render
                 {
                     return; // encerra o loop assim que tods as bolas forem renderizadas
                 }
-                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f))  // redefine as bolas que estiverem na posição inicial
+                if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f)) // redefine as bolas que estiverem na posição inicial
                 {
                     float x = rowZ;
                     float y = basePosition.y;
@@ -74,19 +76,19 @@ namespace Render
         }
     }
 
+    // Reseta a posição e velocidade de todas as bolas
     void Balls::ResetBall()
     {
-        // Reseta a posição e velocidade de todas as bolas
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            ballPositions[i] = glm::vec3(0.0f, 4.0f, 20.0f);    // Posição inicial
-            speed[i] = 0.0f;                                    // Velocidade inicial
-            onAnimationEvent[i] = false;                        // Reseta o estado de animação
-            ballOrientations[i] = glm::vec3(0.0f, 0.0f, 0.0f);  // Orientação inicial
+            ballPositions[i] = glm::vec3(0.0f, 4.0f, 20.0f);   // Posição inicial
+            speed[i] = 0.0f;                                   // Velocidade inicial
+            onAnimationEvent[i] = false;                       // Reseta o estado de animação
+            ballOrientations[i] = glm::vec3(0.0f, 0.0f, 0.0f); // Orientação inicial
+        }
     }
-    }
-   
 
+    // Define uma velocidade para uma bola específica (usado no InputController)
     void Balls::SetBallSpeed(int index, double newSpeed)
     {
         if (index >= 0 && index < 16)
@@ -98,7 +100,7 @@ namespace Render
     void Balls::AnimateBall(GLFWwindow *window, double deltaTime)
     {
         onAnimationEvent[0] = true;
-        // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
+        // Atualiza a posição das bola se estiver se movendo, d acordo a suas velocidades
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
             if (onAnimationEvent[i])
@@ -110,10 +112,11 @@ namespace Render
 
     void Balls::DetectBallsCollisions()
     {
-        bool ballsAfected[16] = {false};   // Array to track which balls are affected by collisions
-        bool causeCollision[16] = {false}; // Array to track which balls are causing collisions
-        float collisionSpeed[16] = {0.0f}; // Array to track the speed of balls involved in collisions
+        bool ballsAfected[16] = {false};   // defenir que bolas foram afetadas por colisões
+        bool causeCollision[16] = {false}; // defenir que bolas causaram colisões
+        float collisionSpeed[16] = {0.0f}; // velocidade que as bolas afetadas vão receber das bolas que causaram colisões
 
+        // Verifica colisões entre as bolas
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
             for (size_t j = i + 1; j < ballPositions.size(); ++j)
@@ -123,25 +126,27 @@ namespace Render
 
                     if (speed[i] > speed[j])
                     {
+                        // define qual bola causou a colisao e qual bola foi afetada
                         if (distance < 2.0f)
                         {
                             std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
                             causeCollision[i] = true;
-                            collisionSpeed[j] = 0.8f * speed[i];
+                            collisionSpeed[j] = 0.8f * speed[i]; // A bola afetada recebe 80% da velocidade da bola que causou a colisão
                             ballsAfected[j] = true;
                         }
                     }
             }
         }
 
+        // baseado nas colisões detectadas, atualiza a velocidade das bolas
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            if (causeCollision[i])
+            if (causeCollision[i]) // a bola que causou a colisao para
             {
                 speed[i] = 0.0f;
                 onAnimationEvent[i] = false;
             }
-            if (ballsAfected[i])
+            if (ballsAfected[i]) // a bola que foi afetada recebe a velocidade da bola que causou a colisao
             {
                 speed[i] += collisionSpeed[i];
                 onAnimationEvent[i] = true;
@@ -149,30 +154,35 @@ namespace Render
         }
     }
 
+    // Verifica se as bolas estão fora dos limites da mesa (no eixo X)
     void Balls::CalculateTableBorders()
     {
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
+            if (onAnimationEvent[i])
             {
-                std::cout << "Ball " << i << " is out of bounds!" << std::endl;
-                speed[i] = 0.0f;
-                onAnimationEvent[i] = false;
+                if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
+                {
+                    std::cout << "Ball " << i << " is out of bounds!" << std::endl;
+                    speed[i] = 0.0f;
+                    onAnimationEvent[i] = false;
+                }
             }
         }
     }
 
+    // Rotaciona as bolas
     void Balls::BallsRotation()
     {
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            static float rotationAngle[16] = {0.0f};
+            static float rotationAngle[16] = {0.0f}; // guarda o angulo de rotação de cada bola
 
             if (onAnimationEvent[i])
             {
                 if (speed[i] != 0.0f)
                 {
-                    rotationAngle[i] -= (speed[i] * 0.5f);
+                    rotationAngle[i] -= (speed[i] * 0.5f); // enquanto a bola se move, atualiza o angulo de rotação
 
                     ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle[i]);
                 }

@@ -9,7 +9,7 @@
 #include "../Inputs/InputController.h"
 #include <tuple>
 #include "../Texture/Texture.h"
-#include "Balls.h"
+#include "Balls/Balls.h"
 #pragma once
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

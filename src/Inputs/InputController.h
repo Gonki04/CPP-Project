@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "../Camera/Camera.h"
 #include "../Renderer/Mesh/Mesh.h"
-#include "../Renderer/Balls.h"
+#include "../Renderer/Balls/Balls.h"
 #include "../Lights/Lights.h"
 
 namespace Render
