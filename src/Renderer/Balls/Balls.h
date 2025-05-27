@@ -27,7 +27,7 @@ namespace Render
         std::vector<glm::vec3> ballOrientations; // orientações das bolas de bilhar
 
         void GeneratePoolBalls(Shader &shader);
-        void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
+        void DrawPoolBalls();
         void AnimateBall(GLFWwindow *window, double deltaTime);
         void DetectBallsCollisions();
         void CalculateTableBorders();
