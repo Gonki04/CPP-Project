@@ -4,13 +4,19 @@
 #include <glm/glm.hpp>
 #include "../Camera/Camera.h"
 #include "../Renderer/Mesh/Mesh.h"
-#include "../Renderer/Balls.h"
+#include "../Renderer/Balls/Balls.h"
+#include "../Lights/Lights.h"
 
 namespace Render
 {
-    class Balls;
-    class InputController // Classe para controlar inputs do utilizador
+    class Balls; // Forward declaration to avoid circular dependency
+    class InputController
     {
+public:
+        Light* lights[4];
+
+
+        
     public:
         InputController(Camera *camera); // Construtor
         ~InputController(); // Destrutor
