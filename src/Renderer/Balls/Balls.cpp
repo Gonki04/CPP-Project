@@ -15,7 +15,7 @@ namespace Render
         BallsRotation();
     }
 
-    
+    // carrega os modelos das bolas a partir do files usando a funçao 
     void Balls::GeneratePoolBalls(Shader &shader)
     {
         std::string obj_model_filepath = "resources/Assets/";
@@ -34,23 +34,23 @@ namespace Render
         }
     }
 
+    // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
     void Balls::DrawPoolBalls(glm::mat4 &globalRotationMatrix)
     {
         // Parameters for triangle layout
-        float ballRadius = 1.0f;                      // Adjust to your model's scale
+        float ballRadius = 1.0f;                      // escala das bolas
         float rowSpacing = ballRadius * 10.0f;        // distancia entre as linhas
-        float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
+        float colSpacing = ballRadius * 2.0f * 0.87f; // distancia entre as bolas
 
         glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, -25.0f); // posição do centro do triângulo
 
         int ballIndex = 0;
-        // organizar inicialmente as bolas em um triângulo e depois manter o loop de renderização
         for (int row = 0; row < 5; ++row)
         {
             int ballsInRow = row + 1;
 
-            float rowZ = basePosition.z + (row * rowSpacing);
-            float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);
+            float rowZ = basePosition.z + (row * rowSpacing);                           //
+            float rowStartX = basePosition.x - (colSpacing * (ballsInRow - 1) / 2.0f);  //
 
             for (int col = 0; col < ballsInRow; ++col)
             {
@@ -60,12 +60,12 @@ namespace Render
                 }
                 if (ballPositions[ballIndex] == glm::vec3(0.0f, 4.0f, 20.0f)) // redefine as bolas que estiverem na posição inicial
                 {
-                    float x = rowZ;
-                    float y = basePosition.y;
-                    float z = rowStartX + col * colSpacing;
+                    float x = rowZ;                         //
+                    float y = basePosition.y;               //
+                    float z = rowStartX + col * colSpacing; //
 
-                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex]);
-                    ballPositions[ballIndex] = glm::vec3(x, y, z);
+                    poolBalls[ballIndex].Render(glm::vec3(x, y, z), ballOrientations[ballIndex], globalRotationMatrix);
+                    ballPositions[ballIndex] = glm::vec3(x, y, z);  // guarda a posição das bolas numa variável
                 }
                 else // loop de renderização das bolas
                 {

@@ -3,17 +3,18 @@
 #include <GL/glew.h>
 #include <vector>
 
-namespace Render{
-class EBO
+namespace Render
 {
-public:
-	GLuint ID;
-	EBO(); // <-- Add this line if you define EBO::EBO() in EBO.cpp
-	~EBO();
+	class EBO
+	{
+	public:
+		GLuint ID;
+		EBO();
+		~EBO();
 
-	void BufferData(const std::vector<GLuint> &indices);
-	void Bind();
-	void Unbind();
-};
+		void BufferData(const std::vector<GLuint> &indices);
+		void Bind();
+		void Unbind();
+	};
 
 }
