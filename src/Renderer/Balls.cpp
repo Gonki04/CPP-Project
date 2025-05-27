@@ -38,10 +38,10 @@ namespace Render
     {
         // Parameters for triangle layout
         float ballRadius = 1.0f;                      // Adjust to your model's scale
-        float rowSpacing = ballRadius * 2.0f;         // Distance between rows
+        float rowSpacing = ballRadius * 10.0f;         // Distance between rows
         float colSpacing = ballRadius * 2.0f * 0.87f; // 0.87 ≈ sqrt(3)/2 for equilateral triangle
 
-        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, 20.0f); // Center of the triangle base
+        glm::vec3 basePosition = glm::vec3(0.0f, 4.0f, -10.0f); // Center of the triangle base
 
         int ballIndex = 0;
         for (int row = 0; row < 5; ++row)
@@ -94,44 +94,53 @@ namespace Render
     void Balls::AnimateBall(GLFWwindow *window, double deltaTime)
     {
         onAnimationEvent[0] = true;
-        /*
-            if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            {
-                ballPositions[1] = glm::vec3(-20.0f, 4.0f, 0.0f); // Reset position of ball 1
-                onAnimationEvent[1] = true;
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            {
-                speed[0] = 10.0f;
-            }
-        */
         // Atualiza a posição das bola se estiver se movendo, conforme a suas velocidades
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
             if (onAnimationEvent[i])
             {
-                ballPositions[i].x -= speed[i] * static_cast<float>(deltaTime);
+                ballPositions[i].x += speed[i] * static_cast<float>(deltaTime);
             }
         }
     }
 
     void Balls::DetectBallsCollisions()
     {
+        bool ballsAfected[16] = {false};   // Array to track which balls are affected by collisions
+        bool causeCollision[16] = {false}; // Array to track which balls are causing collisions
+        float collisionSpeed[16] = {0.0f}; // Array to track the speed of balls involved in collisions
+
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
             for (size_t j = i + 1; j < ballPositions.size(); ++j)
             {
                 float distance = glm::distance(ballPositions[i], ballPositions[j]);
                 if (onAnimationEvent[i])
-                {
-                    if (distance < 2.0f)
+
+                    if (speed[i] > speed[j])
                     {
-                        std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
-                        speed[j] = speed[i] * 0.8f;
-                        speed[i] = 0.0f;
+                        if (distance < 2.0f)
+                        {
+                            std::cout << "Collision detected between ball " << i << " and ball " << j << std::endl;
+                            causeCollision[i] = true;
+                            collisionSpeed[j] = 0.8f * speed[i];
+                            ballsAfected[j] = true;
+                        }
                     }
-                }
+            }
+        }
+
+        for (size_t i = 0; i < ballPositions.size(); ++i)
+        {
+            if (causeCollision[i])
+            {
+                speed[i] = 0.0f;
+                onAnimationEvent[i] = false;
+            }
+            if (ballsAfected[i])
+            {
+                speed[i] += collisionSpeed[i];
+                onAnimationEvent[i] = true;
             }
         }
     }
@@ -140,14 +149,11 @@ namespace Render
     {
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            if (onAnimationEvent[i])
+            if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
             {
-                if (ballPositions[i].x < -36.0f || ballPositions[i].x > 36.0f)
-                {
-                    std::cout << "Ball " << i << " is out of bounds!" << std::endl;
-                    speed[i] = 0.0f;
-                    onAnimationEvent[i] = false;
-                }
+                std::cout << "Ball " << i << " is out of bounds!" << std::endl;
+                speed[i] = 0.0f;
+                onAnimationEvent[i] = false;
             }
         }
     }
@@ -156,15 +162,15 @@ namespace Render
     {
         for (size_t i = 0; i < ballPositions.size(); ++i)
         {
-            static float rotationAngle = 0.0f;
+            static float rotationAngle[16] = {0.0f};
 
             if (onAnimationEvent[i])
             {
                 if (speed[i] != 0.0f)
                 {
-                    rotationAngle += speed[i];
+                    rotationAngle[i] -= (speed[i] * 0.5f);
 
-                    ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle);
+                    ballOrientations[i] = glm::vec3(0.0f, 0.0f, rotationAngle[i]);
                 }
             }
         }
