@@ -6,39 +6,41 @@
 #include "../Renderer/Mesh/Mesh.h"
 #include "../Renderer/Balls.h"
 
-class Balls;
-
-class InputController
+namespace Render
 {
 
-public:
-    InputController(Camera *camera);
-    ~InputController();
+    class InputController
+    {
 
-    void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
-    void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-    void CursorCallback(GLFWwindow *window, double xpos, double ypos);
-    void SetCallbacks(GLFWwindow *window);
-    void SetTableMesh(Mesh *table_Mesh);
+    public:
+        InputController(Camera *camera);
+        ~InputController();
 
-    void SetBalls(Balls *ballsPtr) { balls = ballsPtr; }
+        void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+        void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+        void CursorCallback(GLFWwindow *window, double xpos, double ypos);
+        void SetCallbacks(GLFWwindow *window);
+        void SetTableMesh(Mesh *table_Mesh);
 
-    // Luzes
-    float modelYaw = 0.0f;
-    float modelPitch = 0.0f;
-    bool ambientEnabled = true;
-    bool directionalEnabled = true;
-    bool pointEnabled = true;
-    bool spotEnabled = true;
+        void SetBalls(Balls *ballsPtr) { balls = ballsPtr; }
 
-private:
-    Camera *camera;
-    Mesh *table_Mesh = nullptr;  // Mesh da mesa
-    glm::vec3 *target = nullptr; // Centro da mesa
-    Balls *balls = nullptr;
+        // Luzes
+        float modelYaw = 0.0f;
+        float modelPitch = 0.0f;
+        bool ambientEnabled = true;
+        bool directionalEnabled = true;
+        bool pointEnabled = true;
+        bool spotEnabled = true;
 
-    int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
+    private:
+        Camera *camera;
+        Mesh *table_Mesh = nullptr;  // Mesh da mesa
+        glm::vec3 *target = nullptr; // Centro da mesa
+        Balls *balls = nullptr;
 
-    float lastX, lastY;
-    bool firstMouse;
-};
+        int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE;
+
+        float lastX, lastY;
+        bool firstMouse;
+    };
+}

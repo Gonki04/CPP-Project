@@ -5,6 +5,9 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Mesh/Mesh.h"
 
+
+namespace Render{
+
 void drawMinimap(Mesh& tableMesh,Mesh& sphereMesh, Shader* shader, int windowWidth, int windowHeight) {
     // Salvar o viewport atual
     GLint viewport[4];
@@ -37,4 +40,5 @@ void drawMinimap(Mesh& tableMesh,Mesh& sphereMesh, Shader* shader, int windowWid
 
     // Restaurar viewport original
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+}
 }

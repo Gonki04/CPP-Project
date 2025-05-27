@@ -1,5 +1,7 @@
 #include "VAO.h"
 
+namespace Render {
+
 VAO::VAO() {
 	glGenVertexArrays(1, &ID);
 }
@@ -23,3 +25,4 @@ void VAO::Delete() {
 	glDeleteVertexArrays(1, &ID);
 }
 
+}

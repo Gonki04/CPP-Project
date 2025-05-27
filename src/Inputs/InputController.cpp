@@ -1,135 +1,138 @@
 #include "InputController.h"
 #include <iostream>
 
-InputController::InputController(Camera *camera)
-    : camera(camera)
+namespace Render
 {
-    modelYaw = -90.0f;
-    modelPitch = 0.0f;
-    lastX = 400.0f;
-    lastY = 300.0f;
-    firstMouse = true;
-}
+    InputController::InputController(Camera *camera)
+        : camera(camera)
+    {
+        modelYaw = -90.0f;
+        modelPitch = 0.0f;
+        lastX = 400.0f;
+        lastY = 300.0f;
+        firstMouse = true;
+    }
 
-void InputController::SetTableMesh(Mesh *table_Mesh)
-{
-    this->table_Mesh = table_Mesh;
-    if (target)
-        delete target;
-    if (table_Mesh)
-        target = new glm::vec3(table_Mesh->GetCenter());
-    else
-        target = nullptr;
-}
+    void InputController::SetTableMesh(Mesh *table_Mesh)
+    {
+        this->table_Mesh = table_Mesh;
+        if (target)
+            delete target;
+        if (table_Mesh)
+            target = new glm::vec3(table_Mesh->GetCenter());
+        else
+            target = nullptr;
+    }
 
-void InputController::SetCallbacks(GLFWwindow *window)
-{
-    glfwSetWindowUserPointer(window, this);
+    void InputController::SetCallbacks(GLFWwindow *window)
+    {
+        glfwSetWindowUserPointer(window, this);
 
-    glfwSetCursorPosCallback(window, [](GLFWwindow *win, double xpos, double ypos)
-                             {
+        glfwSetCursorPosCallback(window, [](GLFWwindow *win, double xpos, double ypos)
+                                 {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->CursorCallback(win, xpos, ypos); });
 
-    glfwSetScrollCallback(window, [](GLFWwindow *win, double xoffset, double yoffset)
-                          {
+        glfwSetScrollCallback(window, [](GLFWwindow *win, double xoffset, double yoffset)
+                              {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->ScrollCallback(win, xoffset, yoffset); });
 
-    glfwSetKeyCallback(window, [](GLFWwindow *win, int key, int scancode, int action, int mods)
-                       {
+        glfwSetKeyCallback(window, [](GLFWwindow *win, int key, int scancode, int action, int mods)
+                           {
         auto* controller = static_cast<InputController*>(glfwGetWindowUserPointer(win));
         if (controller) controller->KeyCallback(win, key, scancode, action, mods); });
-}
-
-void InputController::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
-{
-    camera->HandleScroll(yoffset);
-}
-
-void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypos)
-{
-    if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS))
-    {
-        return;
     }
 
-    if (firstMouse)
+    void InputController::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
     {
+        camera->HandleScroll(yoffset);
+    }
+
+    void InputController::CursorCallback(GLFWwindow *window, double xpos, double ypos)
+    {
+        if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS))
+        {
+            return;
+        }
+
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos; // invertido
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+
+        float sensitivity = 0.1f;
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+
+        modelYaw += xoffset;
+        modelPitch += yoffset;
+
+        if (modelPitch > 89.0f)
+            modelPitch = 89.0f;
+        if (modelPitch < -89.0f)
+            modelPitch = -89.0f;
+
+        std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
+        std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // invertido
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    modelYaw += xoffset;
-    modelPitch += yoffset;
-
-    if (modelPitch > 89.0f)
-        modelPitch = 89.0f;
-    if (modelPitch < -89.0f)
-        modelPitch = -89.0f;
-
-    std::cout << "Yaw: " << modelYaw << ", Pitch: " << modelPitch << std::endl;
-    std::cout << "Camera Position: " << camera->Position.x << ", " << camera->Position.y << ", " << camera->Position.z << std::endl;
-}
-
-void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-
-    if (key == GLFW_KEY_1)
+    void InputController::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
-        if (action == GLFW_PRESS && prev1 == GLFW_RELEASE)
+
+        if (key == GLFW_KEY_1)
         {
-            ambientEnabled = !ambientEnabled;
+            if (action == GLFW_PRESS && prev1 == GLFW_RELEASE)
+            {
+                ambientEnabled = !ambientEnabled;
+            }
+            prev1 = action;
         }
-        prev1 = action;
-    }
 
-    if (key == GLFW_KEY_2)
-    {
-        if (action == GLFW_PRESS && prev2 == GLFW_RELEASE)
+        if (key == GLFW_KEY_2)
         {
-            directionalEnabled = !directionalEnabled;
+            if (action == GLFW_PRESS && prev2 == GLFW_RELEASE)
+            {
+                directionalEnabled = !directionalEnabled;
+            }
+            prev2 = action;
         }
-        prev2 = action;
-    }
 
-    if (key == GLFW_KEY_3)
-    {
-        if (action == GLFW_PRESS && prev3 == GLFW_RELEASE)
+        if (key == GLFW_KEY_3)
         {
-            pointEnabled = !pointEnabled;
+            if (action == GLFW_PRESS && prev3 == GLFW_RELEASE)
+            {
+                pointEnabled = !pointEnabled;
+            }
+            prev3 = action;
         }
-        prev3 = action;
-    }
 
-    if (key == GLFW_KEY_4)
-    {
-        if (action == GLFW_PRESS && prev4 == GLFW_RELEASE)
+        if (key == GLFW_KEY_4)
         {
-            spotEnabled = !spotEnabled;
+            if (action == GLFW_PRESS && prev4 == GLFW_RELEASE)
+            {
+                spotEnabled = !spotEnabled;
+            }
+            prev4 = action;
         }
-        prev4 = action;
-    }
 
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-    {
-        // define a posiçao da bola 1 para uma nova posiçao
-        balls->ResetBall(1, glm::vec3(-20.0f, 4.0f, 0.0f));
-    }
+        if (key == GLFW_KEY_C && action == GLFW_PRESS)
+        {
+            // define a posiçao da bola 1 para uma nova posiçao
+            balls->ResetBall(1, glm::vec3(-20.0f, 4.0f, 0.0f));
+        }
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-    {
-        // define o speed da bola 0 para 10.0f
-        balls->SetBallSpeed(0, 10.0f);
+        if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+        {
+            // define o speed da bola 0 para 10.0f
+            balls->SetBallSpeed(0, 10.0f);
+        }
     }
 }

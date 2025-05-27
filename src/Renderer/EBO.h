@@ -1,10 +1,9 @@
-#ifndef EBO_CLASS_H
-#define EBO_CLASS_H
 #pragma once
 
 #include <GL/glew.h>
 #include <vector>
 
+namespace Render{
 class EBO
 {
 public:
@@ -17,4 +16,4 @@ public:
 	void Unbind();
 };
 
-#endif
+}

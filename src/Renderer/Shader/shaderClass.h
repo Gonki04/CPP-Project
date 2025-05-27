@@ -1,5 +1,4 @@
-#ifndef SHADER_CLASS_H
-#define SHADER_CLASS_H
+#pragma once
 
 #include<GL/glew.h>
 #include<string>
@@ -10,6 +9,8 @@
 #include<glm/glm.hpp>
 
 std::string get_file_contents(const char* filename);
+
+namespace Render {
 
 class Shader
 {
@@ -31,4 +32,4 @@ private:
 };
 
 
-#endif
+}

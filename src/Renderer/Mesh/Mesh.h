@@ -16,7 +16,7 @@
 // 	unsigned int id;
 // 	std::string type;
 // };
-
+namespace Render{
 class Mesh
 {
 public:
@@ -42,3 +42,4 @@ private:
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 };
+}

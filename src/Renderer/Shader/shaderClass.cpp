@@ -1,5 +1,8 @@
 #include "shaderClass.h"
 
+
+namespace Render{
+
 std::string get_file_contents(const char* filename)
 {
 	std::ifstream in(filename, std::ios::in | std::ios::binary);
@@ -105,4 +108,5 @@ void Shader::SetFloat(const std::string& name, float value) const {
 
 void Shader::SetInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
 }

@@ -1,5 +1,7 @@
 #include "EBO.h"
 
+namespace Render {
+
 EBO::EBO() {
     glGenBuffers(1, &ID);
 }
@@ -20,3 +22,4 @@ void EBO::Unbind() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+}

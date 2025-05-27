@@ -1,10 +1,10 @@
-#ifndef VBO_CLASS_H
-#define VBO_CLASS_H
 #pragma once
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <vector>
+
+namespace Render {
 
 struct Vertex {
 	glm::vec3 Position;
@@ -22,6 +22,4 @@ public:
 	void Delete();
 };
 
-
-
-#endif
+}

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "Renderer.h"
 
+namespace Render{
 class Balls
 {
 public:
@@ -31,3 +32,4 @@ private:
     void CalculateTableBorders();
     void BallsRotation();
 };
+}

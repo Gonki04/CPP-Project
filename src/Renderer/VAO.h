@@ -1,9 +1,8 @@
-#ifndef VAO_CLASS_H
-#define VAO_CLASS_H
 #pragma once
 
 #include"VBO.h"
 
+namespace Render{
 class VAO
 {
 public:
@@ -17,4 +16,4 @@ public:
 	void Delete();
 };
 
-#endif
+}
