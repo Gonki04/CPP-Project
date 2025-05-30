@@ -1,4 +1,4 @@
-﻿//#include <Camera/Camera.h>
+﻿
 #include "Minimap/Minimap.h"
 #include <Renderer/Renderer.h>
 #include <Windows.h>
@@ -16,7 +16,7 @@ namespace
 	constexpr float kInitialZoom = 10.0f;
 	constexpr float kRotationSpeed = 0.001f;
 	GLfloat kAngle = 0.0f;
-} // namespace
+} 
 
 
 int main() {

@@ -9,7 +9,7 @@
 
 namespace Render
 {
-    class Balls; // Forward declaration to avoid circular dependency
+    class Balls;
     class InputController
     {
 public:
@@ -18,35 +18,35 @@ public:
 
         
     public:
-        InputController(Camera *camera); // Construtor
-        ~InputController(); // Destrutor
+        InputController(Camera *camera); 
+        ~InputController(); 
 
-        void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset); // Callback para o scroll do rato
-        void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods); // Callback para o teclado
-        void CursorCallback(GLFWwindow *window, double xpos, double ypos); // Callback para o movimento do rato
-        void SetCallbacks(GLFWwindow *window); // Regista os callbacks na janela GLFW
-        void SetTableMesh(Mesh *table_Mesh); // Define a mesh da mesa
-        void SetBalls(Balls *balls_ptr); // Define o ponteiro para as bolas
+        void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset); 
+        void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods); 
+        void CursorCallback(GLFWwindow *window, double xpos, double ypos); 
+        void SetCallbacks(GLFWwindow *window); 
+        void SetTableMesh(Mesh *table_Mesh); 
+        void SetBalls(Balls *balls_ptr); 
 
-        float modelYaw; // Ângulo de rotação em Y
-        float modelPitch; // Ângulo de rotação em X
+        float modelYaw; 
+        float modelPitch; 
 
-        bool ambientEnabled = true; // Luz ambiente ativa
-        bool directionalEnabled = true; // Luz direcional ativa
-        bool pointEnabled = true; // Luz pontual ativa
-        bool spotEnabled = true; // Luz spot ativa
+        bool ambientEnabled = true; 
+        bool directionalEnabled = true; 
+        bool pointEnabled = true; 
+        bool spotEnabled = true; 
 
-        glm::mat4 GetGlobalRotationMatrix() const; // Retorna a matriz de rotação global
+        glm::mat4 GetGlobalRotationMatrix() const; 
 
     private:
-        Camera *camera; // Ponteiro para a câmara
-        Mesh *table_Mesh = nullptr;  // Ponteiro para a mesh da mesa
-        glm::vec3 *target = nullptr; // Centro da mesa
-        Balls *balls = nullptr; // Ponteiro para as bolas
+        Camera *camera; 
+        Mesh *table_Mesh = nullptr;  
+        glm::vec3 *target = nullptr; 
+        Balls *balls = nullptr; 
 
-        int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE; // Estados anteriores das teclas
+        int prev1 = GLFW_RELEASE, prev2 = GLFW_RELEASE, prev3 = GLFW_RELEASE, prev4 = GLFW_RELEASE; 
 
-        float lastX, lastY; // Últimas posições do rato
-        bool firstMouse; // Indica se é o primeiro movimento do rato
+        float lastX, lastY; 
+        bool firstMouse; 
     };
 }

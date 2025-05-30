@@ -13,20 +13,20 @@ namespace Render
         Balls(Shader &shader)
             : shader(shader)
         {
-            GeneratePoolBalls(shader); // assim que a classe for instanciada, as bolas serão geradas
+            GeneratePoolBalls(shader); 
         }
 
-        void BallsControl(GLFWwindow *window, double deltaTime,glm::mat4 &globalRotationMatrix); // controla as bolas, atualizando suas posições e animações
-        void ResetBall(); // reseta a posição e velocidade da bola branca
-        void SetBallSpeed(int index, double newSpeed); // define a velocidade de uma bola específica
-        Mesh* GetSphereMesh() { return &poolBalls[0]; } // Retorna a primeira bola como referência
+        void BallsControl(GLFWwindow *window, double deltaTime,glm::mat4 &globalRotationMatrix); 
+        void ResetBall(); 
+        void SetBallSpeed(int index, double newSpeed); 
+        Mesh* GetSphereMesh() { return &poolBalls[0]; } 
         void DrawPoolBalls(glm::mat4 &globalRotationMatrix);
 
     private:
-        Shader &shader; // referência ao shader usado para renderizar as bolas
-        std::vector<Mesh> poolBalls; // vetor de meshes que representa as bolas de bilhar
-        std::vector<glm::vec3> ballPositions; // posições das bolas de bilhar
-        std::vector<glm::vec3> ballOrientations; // orientações das bolas de bilhar
+        Shader &shader; 
+        std::vector<Mesh> poolBalls; 
+        std::vector<glm::vec3> ballPositions; 
+        std::vector<glm::vec3> ballOrientations; 
 
         void GeneratePoolBalls(Shader &shader);
         void AnimateBall(GLFWwindow *window, double deltaTime);

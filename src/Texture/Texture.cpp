@@ -7,7 +7,7 @@ Texture::Texture() {}
 
 Texture::~Texture() {}
 
-// Carrega uma textura a partir de um caminho
+
 unsigned int Texture::LoadTexture(const std::string& path) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -38,7 +38,7 @@ unsigned int Texture::LoadTexture(const std::string& path) {
     return textureID;
 }
 
-// Configura os parâmetros da textura OpenGL
+
 void Texture::SetupTextureParameters(unsigned int textureID) {
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -47,7 +47,7 @@ void Texture::SetupTextureParameters(unsigned int textureID) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-// Obtém o caminho completo da textura a partir do caminho base e do nome da textura
+
 std::string Texture::GetTexturePath(const std::string& basePath, const std::string& textureName) {
     size_t lastSlash = basePath.find_last_of("/\\");
     if (lastSlash != std::string::npos) {
@@ -56,7 +56,7 @@ std::string Texture::GetTexturePath(const std::string& basePath, const std::stri
     return textureName;
 }
 
-// Carrega um ficheiro MTL e armazena os materiais num mapa
+
 void Texture::LoadMTL(const std::string& mtlFilePath, std::map<std::string, Material>& materials) {
     std::fstream file(mtlFilePath, std::ios::in);
     if (!file.is_open()) {

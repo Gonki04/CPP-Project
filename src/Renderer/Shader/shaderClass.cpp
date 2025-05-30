@@ -17,7 +17,7 @@ std::string get_file_contents(const char* filename)
 		return(contents);
 	}
 	return "";
-	//throw(errno);
+	
 }
 
 Shader::Shader()
@@ -33,27 +33,27 @@ void Shader::LoadShader(const char* vertexFile, const char* fragmentFile)
 	const char* vertexSource = vertexCode.c_str();
 	const char* fragmentSource = fragmentCode.c_str();
 
-	// Criar objeto vertex shader e obter a referencia
+	
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// encaixar o vertexShaderSource ao objeto vertexShader
+	
 
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	//compilar o vertexShader
+	
 	glCompileShader(vertexShader);
 
 
-	//Mesma coisa que o anterior mas para o fragmentShader
+	
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
 
-	//Criar o shaderProgram e obter a sua referencia
+	
 	ID = glCreateProgram();
 
-	//Encaixar as shaders no shaderprogram
+	
 	glAttachShader(ID, vertexShader);
 	glAttachShader(ID, fragmentShader);
-	//linkagem do programa
+	
 	glLinkProgram(ID);
 
 	glDeleteShader(vertexShader);
@@ -62,15 +62,15 @@ void Shader::LoadShader(const char* vertexFile, const char* fragmentFile)
 
 void Shader::Activate()
 {
-	glUseProgram(ID); // Ativa o shader program
+	glUseProgram(ID); 
 }
 
 void Shader::Delete()
 {
-	glDeleteProgram(ID); // Apaga o shader program
+	glDeleteProgram(ID); 
 }
 
-// Função para verificar erros de compilação dos shaders
+
 void Shader::compileErrors(unsigned int shader, const char* type)
 {
 	GLint hasCompiled; 
@@ -95,22 +95,22 @@ void Shader::compileErrors(unsigned int shader, const char* type)
 	}
 }
 
-// Define uma matriz 4x4 no shader
+
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-// Define um vetor 3D no shader
+
 void Shader::SetVec3(const std::string& name, const glm::vec3& vec) const {
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &vec[0]);
 }
 
-// Define um valor float no shader
+
 void Shader::SetFloat(const std::string& name, float value) const {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-// Define um valor inteiro no shader
+
 void Shader::SetInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }

@@ -3,7 +3,7 @@
 #include "Renderer/Shader/shaderClass.h"
 
 namespace Render {
-    class Balls; // Forward declaration
+    class Balls;
 
     void drawMinimap(Mesh& tableMesh, Balls& balls, Shader* shader, int windowWidth, int windowHeight);
 }
